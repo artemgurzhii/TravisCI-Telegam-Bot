@@ -1,6 +1,6 @@
 import TelegramBot from 'node-telegram-bot-api';                // importing telegram bot node api
 import https from 'https';                                      // importing https to make requests to travis json user data
-const token = '227706347:AAF-Iq5fV8L4JYdk3g5wcU-z1eK1dd4sKa0';  // authorization token
+const token = '';  // authorization token
 let bot = new TelegramBot(token, {polling: true});              // initializing new bot
 const opts = {              // keyboard options
   reply_markup: {
