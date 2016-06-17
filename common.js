@@ -39,7 +39,7 @@ bot.on('text', function (msg) {
     msgText === text ? bot.sendMessage(chatID, response) : false;
   };
 
-  if (msgText === ('hi' && 'Hi' && 'HI' && 'Hello')) {
+  if (msgText === ('hi' || 'Hi' || 'HI' || 'Hello')) {
     bot.sendMessage(chatID, 'hi');
   }
 
@@ -97,9 +97,12 @@ bot.on('text', function (msg) {
 
             var buildDoneText = parsed.last_build_status === 0 ? 'completed successfully' : 'failed';
             var buildNumber = parsed.last_build_number;
-            var buildDuration = parsed.last_build_number;
+            var buildDuration = parsed.last_build_duration;
             var minutes = Math.floor(buildDuration / 60);
             var seconds = buildDuration - minutes * 60;
+            if (seconds < 10) {
+              seconds = '0' + seconds;
+            }
             var repoName = parsed.slug.slice(parsed.slug.lastIndexOf('/') + 1);
 
             bot.sendMessage(chatID, 'Hi, your build at ' + repoName + ' repository just has ended. \nYour build ' + buildDoneText + '. \nBuild number was ' + buildNumber + ' and total time is ' + minutes + ':' + seconds);
@@ -117,7 +120,7 @@ bot.on('text', function (msg) {
   }
 
   botSendMsg('/help', 'Hi, i\'m @TravisCI_Telegam_Bot. I will notify you each time when your Travis CI build is done. You can read more on https://github.com/artemgurzhii/TravisCI_Telegam_Bot.\n\nTo start please send me your Travis CI link.');
-  botSendMsg('/how', 'You send me your Tavis CI repository link. Example: \nhttps://travis-ci.org/twbs/bootstrap \n\nThen I will watch for changes and will notify you each time when your build is done. \n\nI will also include some basic information about your build. \n\nCurrently i can watch only one repository from each user.');
+  botSendMsg('/how', 'You send me your Tavis CI repository link. Example: \nhttps://travis-ci.org/twbs/bootstrap \nThen I will watch for changes and will notify you each time when your build is done. \n\nI will also include some basic information about your build. \nCurrently i can watch only one repository from each user.');
   botSendMsg('Yes', 'Ok, now I will start watching for changes. Since know I will notify you each time when your Travis CI build is done.');
   botSendMsg('No', 'Ok, than send me link you want to watch');
 });

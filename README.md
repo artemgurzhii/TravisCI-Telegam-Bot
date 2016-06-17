@@ -4,6 +4,7 @@ Telegram bot, which will notify you each time, when your Travis CI build is done
 
 ### Usage
 To start using this bot [send him message](https://telegram.me/TravisCI_Telegam_Bot)
+
 You can type `/help` or `/how` to get more useful information about how it works.
 
 You should send the link to your Travis CI repository like [https://travis-ci.org/artemgurzhii/conference](https://travis-ci.org/artemgurzhii/conference). After that, a bot will listen for new builds and will notify you each time when your build is done.
