@@ -20,6 +20,7 @@ var opts = { // keyboard options
     one_time_keyboard: true // keyboard will shown only once and when it's required
   }
 };
+require('./web');
 
 bot.on('text', function (msg) {
   // when user sending message
@@ -29,14 +30,18 @@ bot.on('text', function (msg) {
   var userID = void 0; // need to have this values in global scope
   var userRepo = void 0; // need to have this values in global scope
   var options = void 0; // options for http request json data
-  var prevBuiltNumber = void 0; // storing number of previous build
-  var currBuiltNumber = void 0; // storing number of current build
+  var prevBuildNumber = void 0; // storing number of previous build
+  var currBuildNumber = void 0; // storing number of current build
 
   // Send Message from bot function
   var botSendMsg = function botSendMsg(text, response) {
     // Function takes two arguments, bot command, and bot response
     msgText === text ? bot.sendMessage(chatID, response) : false;
   };
+
+  if (msgText === ('hi' && 'Hi' && 'HI' && 'Hello')) {
+    bot.sendMessage(chatID, 'hi');
+  }
 
   // Function for getting JSON data file for user repository
   var getTravisData = function getTravisData() {
@@ -62,11 +67,11 @@ bot.on('text', function (msg) {
       });
       response.on('end', function () {
         var parsed = JSON.parse(str); // parsing received data
-        prevBuiltNumber = parsed.last_build_number; // ssigning previous build number to prevBuiltNumber
-        // checking if currBuiltNumber has value
-        if (!!!currBuiltNumber) {
+        prevBuildNumber = parsed.last_build_number; // ssigning previous build number to prevBuildNumber
+        // checking if currBuildNumber has value
+        if (!!!currBuildNumber) {
           // if it doesn't
-          currBuiltNumber = prevBuiltNumber; // assign it to prevBuiltNumber
+          currBuildNumber = prevBuildNumber; // assign it to prevBuildNumber
         }
       });
     }).end();
@@ -83,12 +88,12 @@ bot.on('text', function (msg) {
         });
         response.on('end', function () {
           var parsed = JSON.parse(str); // parsing JSON data
-          currBuiltNumber = parsed.last_build_number; // assigning current build number to currBuiltNumber
-          if (prevBuiltNumber !== currBuiltNumber && parsed.last_build_finished_at) {
-            // if after assigning it's not same as prevBuiltNumber
+          currBuildNumber = parsed.last_build_number; // assigning current build number to currBuildNumber
+          if (prevBuildNumber !== currBuildNumber && parsed.last_build_finished_at) {
+            // if after assigning it's not same as prevBuildNumber
 
-            currBuiltNumber = parsed.last_build_number; // reassign new variables
-            prevBuiltNumber = parsed.last_build_number; // reassign new variables
+            currBuildNumber = parsed.last_build_number; // reassign new variables
+            prevBuildNumber = parsed.last_build_number; // reassign new variables
 
             var buildDoneText = parsed.last_build_status === 0 ? 'completed successfully' : 'failed';
             var buildNumber = parsed.last_build_number;
@@ -97,7 +102,7 @@ bot.on('text', function (msg) {
             var seconds = buildDuration - minutes * 60;
             var repoName = parsed.slug.slice(parsed.slug.lastIndexOf('/') + 1);
 
-            bot.sendMessage(chatID, '\n              Hi, your build at ' + repoName + ' repository just has ended. Your build ' + buildDoneText + '.\n              Build number was ' + buildNumber + ' and total time is ' + minutes + ':' + seconds + '\n            ');
+            bot.sendMessage(chatID, 'Hi, your build at ' + repoName + ' repository just has ended. \nYour build ' + buildDoneText + '. \nBuild number was ' + buildNumber + ' and total time is ' + minutes + ':' + seconds);
           }
         });
       }).end();

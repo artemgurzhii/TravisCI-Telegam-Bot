@@ -11,6 +11,7 @@ const opts = {              // keyboard options
     one_time_keyboard: true // keyboard will shown only once and when it's required
   }
 };
+require('./web');
 
 bot.on('text', msg => {                             // when user sending message
   const chatID = msg.chat.id;                       // Saving user chat id from who bot received message
@@ -19,13 +20,17 @@ bot.on('text', msg => {                             // when user sending message
   let userID;                                       // need to have this values in global scope
   let userRepo;                                     // need to have this values in global scope
   let options;                                      // options for http request json data
-  let prevBuiltNumber;                              // storing number of previous build
-  let currBuiltNumber;                              // storing number of current build
+  let prevBuildNumber;                              // storing number of previous build
+  let currBuildNumber;                              // storing number of current build
 
   // Send Message from bot function
   const botSendMsg = (text, response) => {  // Function takes two arguments, bot command, and bot response
     msgText === text ? bot.sendMessage(chatID, response) : false;
   };
+
+  if (msgText === ('hi' || 'Hi' || 'HI' || 'Hello')) {
+    bot.sendMessage(chatID, 'hi');
+  }
 
   // Function for getting JSON data file for user repository
   const getTravisData = () => {
@@ -51,10 +56,10 @@ bot.on('text', msg => {                             // when user sending message
       });
       response.on('end', () => {
         const parsed = JSON.parse(str);               // parsing received data
-        prevBuiltNumber = parsed.last_build_number;   // ssigning previous build number to prevBuiltNumber
-        // checking if currBuiltNumber has value
-        if (!(!!currBuiltNumber)) {                   // if it doesn't
-          currBuiltNumber = prevBuiltNumber;          // assign it to prevBuiltNumber
+        prevBuildNumber = parsed.last_build_number;   // ssigning previous build number to prevBuildNumber
+        // checking if currBuildNumber has value
+        if (!(!!currBuildNumber)) {                   // if it doesn't
+          currBuildNumber = prevBuildNumber;          // assign it to prevBuildNumber
         }
       });
     }).end();
@@ -71,11 +76,11 @@ bot.on('text', msg => {                             // when user sending message
         });
         response.on('end', () => {
           const parsed = JSON.parse(str);             // parsing JSON data
-          currBuiltNumber = parsed.last_build_number; // assigning current build number to currBuiltNumber
-          if (prevBuiltNumber !== currBuiltNumber && parsed.last_build_finished_at) {  // if after assigning it's not same as prevBuiltNumber
+          currBuildNumber = parsed.last_build_number; // assigning current build number to currBuildNumber
+          if (prevBuildNumber !== currBuildNumber && parsed.last_build_finished_at) {  // if after assigning it's not same as prevBuildNumber
 
-            currBuiltNumber = parsed.last_build_number;   // reassign new variables
-            prevBuiltNumber = parsed.last_build_number;   // reassign new variables
+            currBuildNumber = parsed.last_build_number;   // reassign new variables
+            prevBuildNumber = parsed.last_build_number;   // reassign new variables
 
             let buildDoneText = parsed.last_build_status === 0 ? 'completed successfully' : 'failed';
             let buildNumber = parsed.last_build_number;
