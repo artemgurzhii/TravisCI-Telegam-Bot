@@ -35,9 +35,7 @@ app.get('/', function (req, res) {
 });
 
 var server = app.listen(process.env.PORT, function () {
-  var host = server.address().address;
-  var port = server.address().port;
-  console.log('Web server started at http://%s:%s', host, port);
+  console.log('Web server started at http://%s:%s', server.address().address, server.address().port);
 });
 
 bot.on('text', function (msg) {
@@ -48,8 +46,8 @@ bot.on('text', function (msg) {
   var userID = void 0; // need to have this values in global scope
   var userRepo = void 0; // need to have this values in global scope
   var options = void 0; // options for http request json data
-  var prevBuildNumber = void 0; // storing number of previous build
-  var currBuildNumber = void 0; // storing number of current build
+  var prevBuild = void 0; // storing number of previous build
+  var currBuild = void 0; // storing number of current build
 
   // Send Message from bot function
   var botSendMsg = function botSendMsg(text, response) {
@@ -81,41 +79,48 @@ bot.on('text', function (msg) {
       });
       response.on('end', function () {
         var parsed = JSON.parse(str); // parsing received data
-        prevBuildNumber = parsed.last_build_number; // ssigning previous build number to prevBuildNumber
-        // checking if currBuildNumber has value
-        if (!!!currBuildNumber) {
-          // if it doesn't
-          currBuildNumber = prevBuildNumber; // assign it to prevBuildNumber
+        prevBuild = parsed.last_build_number; // ssigning previous build number to prevBuild
+        if (!!!currBuild) {
+          // if currBuild doesn't have value
+          currBuild = prevBuild; // assign it to prevBuild
         }
       });
     }).end();
   };
 
-  // creating function which will be called when user sends travis link
   var httpIntervalRequest = function httpIntervalRequest() {
-    // creating setInterval to make http request each 7 seconds
+    // creating function which will be called when user sends travis link
     setInterval(function () {
+      // creating setInterval to make http request each 7 seconds
       _https2.default.request(options, function (response) {
-        var str = '';
+        // defining options
+        var str = ''; // creating string where all json will be stored
         response.on('data', function (data) {
-          str += data;
+          // while getting data
+          str += data; // pass data to string
         });
         response.on('end', function () {
+          // when request is done
           var parsed = JSON.parse(str); // parsing JSON data
-          currBuildNumber = parsed.last_build_number; // assigning current build number to currBuildNumber
-          if (prevBuildNumber !== currBuildNumber && parsed.last_build_finished_at) {
-            // if after assigning it's not same as prevBuildNumber
+          currBuild = parsed.last_build_number; // assigning current build number
+          if (prevBuild !== currBuild && parsed.last_build_finished_at) {
+            // if prevBuild !== currBuild and build done
 
-            currBuildNumber = parsed.last_build_number; // reassign new variables
-            prevBuildNumber = parsed.last_build_number; // reassign new variables
+            currBuild = parsed.last_build_number; // reassign new variables
+            prevBuild = parsed.last_build_number; // reassign new variables
 
-            var buildDoneText = parsed.last_build_status === 0 ? 'completed successfully' : 'failed';
-            var buildNumber = parsed.last_build_number;
-            var repoName = parsed.slug.slice(parsed.slug.lastIndexOf('/') + 1);
+            var buildText = parsed.last_build_status === 0 ? 'completed successfully' : 'failed'; // defining if build failed or passed
+            var buildNumber = parsed.last_build_number; // geting build number
+            var repoName = parsed.slug.slice(parsed.slug.indexOf('/') + 1); // name of repository
+            var startedAt = parsed.last_build_started_at; // when build was started
+            var finishedAt = parsed.last_build_finished_at; // when build was ended
+            var buildStarted = startedAt.slice(startedAt.indexOf('T') + 1, startedAt.length - 1); // getting pure date
+            var buildFinished = finishedAt.slice(finishedAt.indexOf('T') + 1, finishedAt.length - 1); // getting pure date
 
-            bot.sendMessage(chatID, 'Hi, your build at ' + repoName + ' repository just has ended. \nYour build ' + buildDoneText + '. \nBuild number was ' + buildNumber);
+            bot.sendMessage(chatID, 'Hi, your build at ' + repoName + ' repository just has ended. \nYour build ' + buildText + '. \nBuild number was ' + buildNumber + '. Your build started at ' + buildStarted + ' and finished at ' + buildFinished);
           } else if (!parsed.last_build_finished_at) {
-            prevBuildNumber = parsed.last_build_number - 1;
+            // if user send link during build
+            prevBuild = parsed.last_build_number - 1; // assign prevBuild number to currBuildNumber - 1
           }
         });
       }).end();

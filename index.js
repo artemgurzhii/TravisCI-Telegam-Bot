@@ -21,21 +21,19 @@ app.get('/', function (req, res) {
 });
 
 let server = app.listen(process.env.PORT, () => {
-  let host = server.address().address;
-  let port = server.address().port;
-  console.log('Web server started at http://%s:%s', host, port);
+  console.log('Web server started at http://%s:%s', server.address().address, server.address().port);
 });
 
 
-bot.on('text', msg => {                             // when user sending message
-  const chatID = msg.chat.id;                       // Saving user chat id from who bot received message
-  const msgText = msg.text;                         // Getting text content
-  const travisLink = "https://travis-ci.org";       // Using for getting json data and slicing strings
-  let userID;                                       // need to have this values in global scope
-  let userRepo;                                     // need to have this values in global scope
-  let options;                                      // options for http request json data
-  let prevBuildNumber;                              // storing number of previous build
-  let currBuildNumber;                              // storing number of current build
+bot.on('text', msg => {                       // when user sending message
+  const chatID = msg.chat.id;                 // Saving user chat id from who bot received message
+  const msgText = msg.text;                   // Getting text content
+  const travisLink = "https://travis-ci.org"; // Using for getting json data and slicing strings
+  let userID;                                 // need to have this values in global scope
+  let userRepo;                               // need to have this values in global scope
+  let options;                                // options for http request json data
+  let prevBuild;                              // storing number of previous build
+  let currBuild;                              // storing number of current build
 
   // Send Message from bot function
   const botSendMsg = (text, response) => {  // Function takes two arguments, bot command, and bot response
@@ -65,40 +63,42 @@ bot.on('text', msg => {                             // when user sending message
         str += data;
       });
       response.on('end', () => {
-        const parsed = JSON.parse(str);               // parsing received data
-        prevBuildNumber = parsed.last_build_number;   // ssigning previous build number to prevBuildNumber
-        // checking if currBuildNumber has value
-        if (!(!!currBuildNumber)) {                   // if it doesn't
-          currBuildNumber = prevBuildNumber;          // assign it to prevBuildNumber
+        const parsed = JSON.parse(str);       // parsing received data
+        prevBuild = parsed.last_build_number; // ssigning previous build number to prevBuild
+        if (!(!!currBuild)) {                 // if currBuild doesn't have value
+          currBuild = prevBuild;              // assign it to prevBuild
         }
       });
     }).end();
   };
 
-  // creating function which will be called when user sends travis link
-  let httpIntervalRequest = () => {
-    // creating setInterval to make http request each 7 seconds
-    setInterval(() => {
-      https.request(options, response => {
-        let str = '';
-        response.on('data', data => {
-          str += data;
+  let httpIntervalRequest = () => {         // creating function which will be called when user sends travis link
+    setInterval(() => {                     // creating setInterval to make http request each 7 seconds
+      https.request(options, response => {  // defining options
+        let str = '';                       // creating string where all json will be stored
+        response.on('data', data => {       // while getting data
+          str += data;                      // pass data to string
         });
-        response.on('end', () => {
-          const parsed = JSON.parse(str);             // parsing JSON data
-          currBuildNumber = parsed.last_build_number; // assigning current build number to currBuildNumber
-          if (prevBuildNumber !== currBuildNumber && parsed.last_build_finished_at) {  // if after assigning it's not same as prevBuildNumber
+        response.on('end', () => {              // when request is done
+          const parsed = JSON.parse(str);       // parsing JSON data
+          currBuild = parsed.last_build_number; // assigning current build number
+          if (prevBuild !== currBuild && parsed.last_build_finished_at) {  // if prevBuild !== currBuild and build done
 
-            currBuildNumber = parsed.last_build_number;   // reassign new variables
-            prevBuildNumber = parsed.last_build_number;   // reassign new variables
+            currBuild = parsed.last_build_number;   // reassign new variables
+            prevBuild = parsed.last_build_number;   // reassign new variables
 
-            let buildDoneText = parsed.last_build_status === 0 ? 'completed successfully' : 'failed';
-            let buildNumber = parsed.last_build_number;
-            let repoName = parsed.slug.slice(parsed.slug.lastIndexOf('/') + 1);
+            let buildText = parsed.last_build_status === 0 ? 'completed successfully' : 'failed'; // defining if build failed or passed
+            let buildNumber = parsed.last_build_number;                     // geting build number
+            let repoName = parsed.slug.slice(parsed.slug.indexOf('/') + 1); // name of repository
+            let startedAt = parsed.last_build_started_at;                   // when build was started
+            let finishedAt = parsed.last_build_finished_at;                 // when build was ended
+            let buildStarted = startedAt.slice(startedAt.indexOf('T') + 1, startedAt.length - 1);     // getting pure date
+            let buildFinished = finishedAt.slice(finishedAt.indexOf('T') + 1, finishedAt.length - 1); // getting pure date
 
-            bot.sendMessage(chatID, `Hi, your build at ${repoName} repository just has ended. \nYour build ${buildDoneText}. \nBuild number was ${buildNumber}`);
-          } else if (!parsed.last_build_finished_at) {
-            prevBuildNumber = parsed.last_build_number - 1;
+            bot.sendMessage(chatID, `Hi, your build at ${repoName} repository just has ended. \nYour build ${buildText}. \nBuild number was ${buildNumber}. Your build started at ${buildStarted} and finished at ${buildFinished}`);
+
+          } else if (!parsed.last_build_finished_at) {  // if user send link during build
+            prevBuild = parsed.last_build_number - 1;   // assign prevBuild number to currBuildNumber - 1
           }
         });
       }).end();
