@@ -8,9 +8,16 @@ var _https = require('https');
 
 var _https2 = _interopRequireDefault(_https);
 
+var _express = require('express');
+
+var _express2 = _interopRequireDefault(_express);
+
+var _package = require('./package.json');
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 // importing https to make requests to travis json user data
+
 var token = '227706347:AAF-Iq5fV8L4JYdk3g5wcU-z1eK1dd4sKa0'; // authorization token
 // importing telegram bot node api
 var bot = new _nodeTelegramBotApi2.default(token, { polling: true }); // initializing new bot
@@ -21,7 +28,18 @@ var opts = { // keyboard options
   }
 };
 
-require('./web');
+var app = (0, _express2.default)();
+
+app.get('/', function (req, res) {
+  res.json({ version: _package.version });
+});
+
+var server = app.listen(process.env.PORT, function () {
+  var host = server.address().address;
+  var port = server.address().port;
+
+  console.log('Web server started at http://%s:%s', host, port);
+});
 
 bot.on('text', function (msg) {
   // when user sending message

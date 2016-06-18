@@ -1,5 +1,7 @@
 import TelegramBot from 'node-telegram-bot-api';                // importing telegram bot node api
 import https from 'https';                                      // importing https to make requests to travis json user data
+import express from 'express';
+import { version as packageInfo } from './package.json';
 const token = '227706347:AAF-Iq5fV8L4JYdk3g5wcU-z1eK1dd4sKa0';  // authorization token
 let bot = new TelegramBot(token, {polling: true});              // initializing new bot
 const opts = {              // keyboard options
@@ -12,7 +14,19 @@ const opts = {              // keyboard options
   }
 };
 
-require('./web');
+let app = express();
+
+app.get('/', function (req, res) {
+  res.json({ version: packageInfo });
+});
+
+let server = app.listen(process.env.PORT, () => {
+  let host = server.address().address;
+  let port = server.address().port;
+
+  console.log('Web server started at http://%s:%s', host, port);
+});
+
 
 bot.on('text', msg => {                             // when user sending message
   const chatID = msg.chat.id;                       // Saving user chat id from who bot received message
