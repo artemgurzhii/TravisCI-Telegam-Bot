@@ -92,13 +92,10 @@ bot.on('text', msg => {                       // when user sending message
             let buildStarted = startedAt.slice(startedAt.indexOf('T') + 1, startedAt.length - 1);     // getting pure date
             let buildFinished = finishedAt.slice(finishedAt.indexOf('T') + 1, finishedAt.length - 1); // getting pure date
 
-            bot.sendMessage(chatID, `Hi, your build at ${repoName} repository just has ended.
-              Your build ${buildText}.
-              Build number was ${buildNumber}.
-              Your build started at ${buildStarted} and finished at ${buildFinished}`);
+            bot.sendMessage(chatID, `Hi, your build at ${repoName} repository just has ended. \nYour build ${buildText}. \nBuild number was ${buildNumber}. \nYour build started at ${buildStarted} and finished at ${buildFinished}`);
 
-              currBuild = parsed.last_build_number;   // reassign new variables
-              prevBuild = parsed.last_build_number;   // reassign new variables
+            currBuild = parsed.last_build_number;   // reassign new variables
+            prevBuild = parsed.last_build_number;   // reassign new variables
 
           } else if (!parsed.last_build_finished_at) {  // if user send link during build
             prevBuild = parsed.last_build_number - 1;   // assign prevBuild number to currBuildNumber - 1
