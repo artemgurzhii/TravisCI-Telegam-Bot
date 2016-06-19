@@ -1,55 +1,70 @@
-import TelegramBot from 'node-telegram-bot-api';                // importing telegram bot node api
-import https from 'https';                                      // importing https to make requests to travis json user data
-import express from 'express';
-import { version as packageInfo } from './package.json';
-const token = '227706347:AAF-Iq5fV8L4JYdk3g5wcU-z1eK1dd4sKa0';  // authorization token
-let bot = new TelegramBot(token, {polling: true});              // initializing new bot
-const opts = {              // keyboard options
+'use strict';
+
+var _nodeTelegramBotApi = require('node-telegram-bot-api');
+
+var _nodeTelegramBotApi2 = _interopRequireDefault(_nodeTelegramBotApi);
+
+var _https = require('https');
+
+var _https2 = _interopRequireDefault(_https);
+
+var _express = require('express');
+
+var _express2 = _interopRequireDefault(_express);
+
+var _package = require('./package.json');
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+// importing https to make requests to travis json user data
+
+var token = '227706347:AAF-Iq5fV8L4JYdk3g5wcU-z1eK1dd4sKa0'; // authorization token
+// importing telegram bot node api
+var bot = new _nodeTelegramBotApi2.default(token, { polling: true }); // initializing new bot
+var opts = { // keyboard options
   reply_markup: {
-    "keyboard": [
-      ["Yes"],
-      ["No"]
-    ],
+    "keyboard": [["Yes"], ["No"]],
     one_time_keyboard: true // keyboard will shown only once and when it's required
   }
 };
 
-let app = express();
+var app = (0, _express2.default)();
 
 app.get('/', function (req, res) {
-  res.json({ version: packageInfo });
+  res.json({ version: _package.version });
 });
 
-let server = app.listen(process.env.PORT, () => {
+var server = app.listen(process.env.PORT, function () {
   console.log('Web server started at http://%s:%s', server.address().address, server.address().port);
 });
 
-
-bot.on('text', msg => {                       // when user sending message
-  const chatID = msg.chat.id;                 // Saving user chat id from who bot received message
-  const msgText = msg.text;                   // Getting text content
-  const travisLink = "https://travis-ci.org"; // Using for getting json data and slicing strings
-  let userID;                                 // need to have this values in global scope
-  let userRepo;                               // need to have this values in global scope
-  let options;                                // options for http request json data
-  let prevBuild;                              // storing number of previous build
-  let currBuild;                              // storing number of current build
+bot.on('text', function (msg) {
+  // when user sending message
+  var chatID = msg.chat.id; // Saving user chat id from who bot received message
+  var msgText = msg.text; // Getting text content
+  var travisLink = "https://travis-ci.org"; // Using for getting json data and slicing strings
+  var userID = void 0; // need to have this values in global scope
+  var userRepo = void 0; // need to have this values in global scope
+  var options = void 0; // options for http request json data
+  var prevBuild = void 0; // storing number of previous build
+  var currBuild = void 0; // storing number of current build
 
   // Send Message from bot function
-  const botSendMsg = (text, response) => {  // Function takes two arguments, bot command, and bot response
+  var botSendMsg = function botSendMsg(text, response) {
+    // Function takes two arguments, bot command, and bot response
     msgText === text ? bot.sendMessage(chatID, response) : false;
   };
 
   // Function for getting JSON data file for user repository
-  const getTravisData = () => {
+  var getTravisData = function getTravisData() {
     userID = msgText.slice(msgText.lastIndexOf('org') + 4, msgText.lastIndexOf('/')); // getting user id
-    userRepo = msgText.slice(msgText.lastIndexOf('/'));                               // getting user repository name
+    userRepo = msgText.slice(msgText.lastIndexOf('/')); // getting user repository name
 
-    bot.sendMessage(chatID, `Ok, ${msgText} is that link you want to watch?`, opts);
+    bot.sendMessage(chatID, 'Ok, ' + msgText + ' is that link you want to watch?', opts);
     // setting options for requested JSON file
     options = {
       host: 'api.travis-ci.org',
-      path: `/repositories/${userID}${userRepo}.json`,
+      path: '/repositories/' + userID + userRepo + '.json',
       method: 'GET',
       headers: {
         'User-Agent': userID
@@ -57,64 +72,70 @@ bot.on('text', msg => {                       // when user sending message
     };
 
     // making request to user travis link to get current build status
-    https.request(options, response => {
-      let str = '';
-      response.on('data', data => {
+    _https2.default.request(options, function (response) {
+      var str = '';
+      response.on('data', function (data) {
         str += data;
       });
-      response.on('end', () => {
-        const parsed = JSON.parse(str);       // parsing received data
+      response.on('end', function () {
+        var parsed = JSON.parse(str); // parsing received data
         prevBuild = parsed.last_build_number; // ssigning previous build number to prevBuild
-        if (!(!!currBuild)) {                 // if currBuild doesn't have value
-          currBuild = prevBuild;              // assign it to prevBuild
+        if (!!!currBuild) {
+          // if currBuild doesn't have value
+          currBuild = prevBuild; // assign it to prevBuild
         }
       });
     }).end();
   };
 
-  let httpIntervalRequest = () => {         // creating function which will be called when user sends travis link
-    setInterval(() => {                     // creating setInterval to make http request each 7 seconds
-      https.request(options, response => {  // defining options
-        let str = '';                       // creating string where all json will be stored
-        response.on('data', data => {       // while getting data
-          str += data;                      // pass data to string
+  var httpIntervalRequest = function httpIntervalRequest() {
+    // creating function which will be called when user sends travis link
+    setInterval(function () {
+      // creating setInterval to make http request each 7 seconds
+      _https2.default.request(options, function (response) {
+        // defining options
+        var str = ''; // creating string where all json will be stored
+        response.on('data', function (data) {
+          // while getting data
+          str += data; // pass data to string
         });
-        response.on('end', () => {              // when request is done
-          const parsed = JSON.parse(str);       // parsing JSON data
+        response.on('end', function () {
+          // when request is done
+          var parsed = JSON.parse(str); // parsing JSON data
           currBuild = parsed.last_build_number; // assigning current build number
-          if (prevBuild !== currBuild && parsed.last_build_finished_at) {  // if prevBuild !== currBuild and build done
+          if (prevBuild !== currBuild && parsed.last_build_finished_at) {
+            // if prevBuild !== currBuild and build done
 
-            currBuild = parsed.last_build_number;   // reassign new variables
-            prevBuild = parsed.last_build_number;   // reassign new variables
+            var buildText = parsed.last_build_status === 0 ? 'completed successfully' : 'failed'; // defining if build failed or passed
+            var buildNumber = parsed.last_build_number; // geting build number
+            var repoName = parsed.slug.slice(parsed.slug.indexOf('/') + 1); // name of repository
+            var startedAt = parsed.last_build_started_at; // when build was started
+            var finishedAt = parsed.last_build_finished_at; // when build was ended
+            var buildStarted = startedAt.slice(startedAt.indexOf('T') + 1, startedAt.length - 1); // getting pure date
+            var buildFinished = finishedAt.slice(finishedAt.indexOf('T') + 1, finishedAt.length - 1); // getting pure date
 
-            let buildText = parsed.last_build_status === 0 ? 'completed successfully' : 'failed'; // defining if build failed or passed
-            let buildNumber = parsed.last_build_number;                     // geting build number
-            let repoName = parsed.slug.slice(parsed.slug.indexOf('/') + 1); // name of repository
-            let startedAt = parsed.last_build_started_at;                   // when build was started
-            let finishedAt = parsed.last_build_finished_at;                 // when build was ended
-            let buildStarted = startedAt.slice(startedAt.indexOf('T') + 1, startedAt.length - 1);     // getting pure date
-            let buildFinished = finishedAt.slice(finishedAt.indexOf('T') + 1, finishedAt.length - 1); // getting pure date
+            bot.sendMessage(chatID, 'Hi, your build at ' + repoName + ' repository just has ended.\n              Your build ' + buildText + '.\n              Build number was ' + buildNumber + '.\n              Your build started at ' + buildStarted + ' and finished at ' + buildFinished);
 
-            bot.sendMessage(chatID, `Hi, your build at ${repoName} repository just has ended. \nYour build ${buildText}. \nBuild number was ${buildNumber}. Your build started at ${buildStarted} and finished at ${buildFinished}`);
-
-          } else if (!parsed.last_build_finished_at) {  // if user send link during build
-            prevBuild = parsed.last_build_number - 1;   // assign prevBuild number to currBuildNumber - 1
-          }
+            currBuild = parsed.last_build_number; // reassign new variables
+            prevBuild = parsed.last_build_number; // reassign new variables
+          } else if (!parsed.last_build_finished_at) {
+              // if user send link during build
+              prevBuild = parsed.last_build_number - 1; // assign prevBuild number to currBuildNumber - 1
+            }
         });
       }).end();
     }, 7000);
   };
 
   // Check if user send Travis Repository link
-  const checkLink = msgText.indexOf(travisLink) > -1 || msgText.indexOf(travisLink.slice(8)) > -1;
+  var checkLink = msgText.indexOf(travisLink) > -1 || msgText.indexOf(travisLink.slice(8)) > -1;
   if (checkLink) {
     getTravisData();
     httpIntervalRequest();
   };
 
-  botSendMsg('/help', `Hi, i'm @TravisCI_Telegam_Bot. I will notify you each time when your Travis CI build is done. You can read more on https://github.com/artemgurzhii/TravisCI_Telegam_Bot.\n\nTo start please send me your Travis CI link.`);
+  botSendMsg('/help', 'Hi, i\'m @TravisCI_Telegam_Bot. I will notify you each time when your Travis CI build is done. You can read more on https://github.com/artemgurzhii/TravisCI_Telegam_Bot.\n\nTo start please send me your Travis CI link.');
   botSendMsg('/how', 'You send me your Tavis CI repository link. Example: \nhttps://travis-ci.org/twbs/bootstrap \nThen I will watch for changes and will notify you each time when your build is done. \n\nI will also include some basic information about your build. \nCurrently i can watch only one repository from each user.');
   botSendMsg('Yes', 'Ok, now I will start watching for changes. Since know I will notify you each time when your Travis CI build is done.');
   botSendMsg('No', 'Ok, than send me link you want to watch');
-
 });
