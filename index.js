@@ -18,7 +18,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 // importing https to make requests to travis json user data
 
-var token = ''; // authorization token
+var token = '227706347:AAF-Iq5fV8L4JYdk3g5wcU-z1eK1dd4sKa0'; // authorization token
 // importing telegram bot node api
 var bot = new _nodeTelegramBotApi2.default(token, { polling: true }); // initializing new bot
 var opts = { // keyboard options
