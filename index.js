@@ -142,7 +142,7 @@ bot.on('text', function (msg) {
   botSendMsg('Yes', 'Ok, now I will start watching for changes. Since know I will notify you each time when your Travis CI build is done.');
   botSendMsg('No', 'Ok, than send me link you want to watch');
 
-  if (currLink === 'undefined') {
+  if (currLink === undefined) {
     botSendMsg('/link', 'Hi, you have no watched links.');
   } else {
     botSendMsg('/link', 'Hi, your link is ' + currLink);
