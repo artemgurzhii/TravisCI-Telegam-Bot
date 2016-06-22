@@ -43,12 +43,23 @@ bot.on('text', msg => {     // when user sending message
 
   // Function for getting JSON data file for user repository
   const getTravisData = () => {
-    userID = msgText.slice(msgText.lastIndexOf('org') + 4, msgText.lastIndexOf('/')); // getting user id
-    userRepo = msgText.slice(msgText.lastIndexOf('/'));                               // getting user repository name
 
-    bot.sendMessage(chatID, `Ok, ${msgText} is that link you want to watch?`, opts);
+    let slicing;
 
-    currLink = msgText;
+    if (msgText.indexOf('https' > -1)) {
+      slicing = msgText.slice(msgText.indexOf('https'), msgText.indexOf(' ', msgText.lastIndexOf('/')));
+    } else {
+      slicing = msgText.slice(msgText.indexOf('travis'), msgText.indexOf(' ', msgText.lastIndexOf('/')));
+    }
+
+    let slicedLink = slicing.replace(/\s/g, '');
+
+    userID = slicedLink.slice(slicedLink.lastIndexOf('org') + 4, slicedLink.lastIndexOf('/')); // getting user id
+    userRepo = slicedLink.slice(slicedLink.lastIndexOf('/'));                                  // getting user repository name
+
+    bot.sendMessage(chatID, `Ok, ${slicedLink} is that link you want to watch?`, opts);
+
+    currLink = slicedLink;
 
     // setting options for requested JSON file
     options = {
@@ -129,3 +140,20 @@ bot.on('text', msg => {     // when user sending message
   botSendMsg('/link', linkMessage);
 
 });
+
+
+
+a = 'xasfasf https://travis-ci.org/emberjs/ember.js asfasfasf'
+var x = a.slice(a.indexOf('https'), a.lastIndexOf(' '));
+var y = x.replace(/\s/g, '');
+
+
+a = 'xasfasf travis-ci.org/emberjs/ember.js asfasfasf'
+var x = a.slice(a.indexOf('travis'), a.lastIndexOf(' '));
+var y = x.replace(/\s/g, '');
+
+if (a.indexOf('https' > -1)) {
+  var x = a.slice(a.indexOf('https'), a.lastIndexOf(' '));
+} else {
+  var x = a.slice(a.indexOf('travis') - 5, a.lastIndexOf(' '));
+}
