@@ -45,7 +45,6 @@ bot.on('text', msg => {     // when user sending message
   const getTravisData = () => {
 
     let slicing;
-
     if (msgText.indexOf('https' > -1)) {
       slicing = msgText.slice(msgText.indexOf('https'), msgText.indexOf(' ', msgText.lastIndexOf('/')));
     } else {
