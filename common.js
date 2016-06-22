@@ -46,6 +46,8 @@ bot.on('text', msg => {                       // when user sending message
     userID = msgText.slice(msgText.lastIndexOf('org') + 4, msgText.lastIndexOf('/')); // getting user id
     userRepo = msgText.slice(msgText.lastIndexOf('/'));                               // getting user repository name
 
+    currLink = `https://travis-ci.org/${userID}${userRepo}`;
+
     bot.sendMessage(chatID, `Ok, ${msgText} is that link you want to watch?`, opts);
     // setting options for requested JSON file
     options = {
@@ -109,7 +111,6 @@ bot.on('text', msg => {                       // when user sending message
   // Check if user send Travis Repository link
   const checkLink = msgText.indexOf(travisLink) > -1 || msgText.indexOf(travisLink.slice(8)) > -1;
   if (checkLink) {
-    currLink = msgText;
     getTravisData();
     httpIntervalRequest();
   };
