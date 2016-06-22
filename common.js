@@ -33,7 +33,7 @@ bot.on('text', msg => {     // when user sending message
   let options;              // options for http request json data
   let prevBuild;            // storing number of previous build
   let currBuild;            // storing number of current build
-  // let currLink;             // storing here name of current link
+  let currLink;             // storing here name of current link
   let linkMessage;          // text message on /link command
 
   // Send Message from bot function
@@ -47,6 +47,9 @@ bot.on('text', msg => {     // when user sending message
     userRepo = msgText.slice(msgText.lastIndexOf('/'));                               // getting user repository name
 
     bot.sendMessage(chatID, `Ok, ${msgText} is that link you want to watch?`, opts);
+
+    currLink = msgText;
+
     // setting options for requested JSON file
     options = {
       host: 'api.travis-ci.org',
@@ -109,7 +112,6 @@ bot.on('text', msg => {     // when user sending message
   // Check if user send Travis Repository link
   const checkLink = msgText.indexOf(travis) > -1 || msgText.indexOf(travis.slice(8)) > -1;
   if (checkLink) {
-    const currLink = msgText;
     getTravisData();
     httpIntervalRequest();
   };
@@ -124,6 +126,6 @@ bot.on('text', msg => {     // when user sending message
   botSendMsg('/how', 'You send me your Tavis CI repository link. Example: \nhttps://travis-ci.org/twbs/bootstrap \nThen I will watch for changes and will notify you each time when your build is done. \n\nI will also include some basic information about your build. \nCurrently I can watch only one repository from each user.');
   botSendMsg('Yes', 'Ok, now I will start watching for changes. Since know I will notify you each time when your Travis CI build is done.');
   botSendMsg('No', 'Ok, than send me link you want to watch');
-  botSendMsg('/link', `Hi, your link is ${currLink}`);
+  botSendMsg('/link', linkMessage);
 
 });
