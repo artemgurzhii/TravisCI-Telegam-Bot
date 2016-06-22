@@ -48,7 +48,7 @@ bot.on('text', function (msg) {
   var options = void 0; // options for http request json data
   var prevBuild = void 0; // storing number of previous build
   var currBuild = void 0; // storing number of current build
-  var currLink = void 0; // storing here name of current link
+  // let currLink;             // storing here name of current link
   var linkMessage = void 0; // text message on /link command
 
   // Send Message from bot function
@@ -132,7 +132,7 @@ bot.on('text', function (msg) {
   // Check if user send Travis Repository link
   var checkLink = msgText.indexOf(travis) > -1 || msgText.indexOf(travis.slice(8)) > -1;
   if (checkLink) {
-    currLink = msgText;
+    var _currLink = msgText;
     getTravisData();
     httpIntervalRequest();
   };
