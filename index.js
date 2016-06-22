@@ -61,7 +61,7 @@ bot.on('text', function (msg) {
     userID = msgText.slice(msgText.lastIndexOf('org') + 4, msgText.lastIndexOf('/')); // getting user id
     userRepo = msgText.slice(msgText.lastIndexOf('/')); // getting user repository name
 
-    currLink = 'https://travis-ci.org/' + userID + userRepo;
+    currLink = msgText;
 
     bot.sendMessage(chatID, 'Ok, ' + msgText + ' is that link you want to watch?', opts);
     // setting options for requested JSON file
@@ -145,6 +145,6 @@ bot.on('text', function (msg) {
   if (currLink === 'undefined') {
     botSendMsg('/link', 'Hi, you have no watched links.');
   } else {
-    botSendMsg('/link', 'Hi, your currently watched link is ' + currLink);
+    botSendMsg('/link', 'Hi, your link is ' + currLink);
   }
 });
