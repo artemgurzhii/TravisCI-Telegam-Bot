@@ -46,8 +46,6 @@ bot.on('text', msg => {                       // when user sending message
     userID = msgText.slice(msgText.lastIndexOf('org') + 4, msgText.lastIndexOf('/')); // getting user id
     userRepo = msgText.slice(msgText.lastIndexOf('/'));                               // getting user repository name
 
-    currLink = msgText;
-
     bot.sendMessage(chatID, `Ok, ${msgText} is that link you want to watch?`, opts);
     // setting options for requested JSON file
     options = {
@@ -111,6 +109,7 @@ bot.on('text', msg => {                       // when user sending message
   // Check if user send Travis Repository link
   const checkLink = msgText.indexOf(travisLink) > -1 || msgText.indexOf(travisLink.slice(8)) > -1;
   if (checkLink) {
+    currLink = msgText;
     getTravisData();
     httpIntervalRequest();
   };
@@ -121,7 +120,7 @@ bot.on('text', msg => {                       // when user sending message
   botSendMsg('No', 'Ok, than send me link you want to watch');
 
   if (currLink === undefined) {
-    botSendMsg('/link', `Hi, you have no watched links.`);
+    botSendMsg('/link', 'Hi, you have no watched links. Send me your link and I will start watching for you changes and will notify you each time when your build is done.');
   } else {
     botSendMsg('/link', `Hi, your link is ${currLink}`);
   }
