@@ -2,7 +2,7 @@ import TelegramBot from 'node-telegram-bot-api';                // importing tel
 import https from 'https';                                      // importing https to make requests to travis json user data
 import express from 'express';
 import { version as packageInfo } from './package.json';
-const token = '';  // authorization token
+const token = '227706347:AAF-Iq5fV8L4JYdk3g5wcU-z1eK1dd4sKa0';  // authorization token
 let bot = new TelegramBot(token, {polling: true});              // initializing new bot
 const opts = {              // keyboard options
   reply_markup: {
@@ -34,6 +34,7 @@ bot.on('text', msg => {                       // when user sending message
   let options;                                // options for http request json data
   let prevBuild;                              // storing number of previous build
   let currBuild;                              // storing number of current build
+  let currLink;                               // storing here name of current link
 
   // Send Message from bot function
   const botSendMsg = (text, response) => {  // Function takes two arguments, bot command, and bot response
@@ -108,12 +109,14 @@ bot.on('text', msg => {                       // when user sending message
   // Check if user send Travis Repository link
   const checkLink = msgText.indexOf(travisLink) > -1 || msgText.indexOf(travisLink.slice(8)) > -1;
   if (checkLink) {
+    currLink = msgText;
     getTravisData();
     httpIntervalRequest();
   };
 
   botSendMsg('/help', `Hi, i'm @TravisCI_Telegam_Bot. I will notify you each time when your Travis CI build is done. You can read more on https://github.com/artemgurzhii/TravisCI_Telegam_Bot.\n\nTo start please send me your Travis CI link.`);
   botSendMsg('/how', 'You send me your Tavis CI repository link. Example: \nhttps://travis-ci.org/twbs/bootstrap \nThen I will watch for changes and will notify you each time when your build is done. \n\nI will also include some basic information about your build. \nCurrently i can watch only one repository from each user.');
+  botSendMsg('/link', currLink);
   botSendMsg('Yes', 'Ok, now I will start watching for changes. Since know I will notify you each time when your Travis CI build is done.');
   botSendMsg('No', 'Ok, than send me link you want to watch');
 

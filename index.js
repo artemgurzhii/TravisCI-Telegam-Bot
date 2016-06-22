@@ -18,7 +18,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 // importing https to make requests to travis json user data
 
-var token = ''; // authorization token
+var token = '227706347:AAF-Iq5fV8L4JYdk3g5wcU-z1eK1dd4sKa0'; // authorization token
 // importing telegram bot node api
 var bot = new _nodeTelegramBotApi2.default(token, { polling: true }); // initializing new bot
 var opts = { // keyboard options
@@ -48,6 +48,7 @@ bot.on('text', function (msg) {
   var options = void 0; // options for http request json data
   var prevBuild = void 0; // storing number of previous build
   var currBuild = void 0; // storing number of current build
+  var currLink = void 0; // storing here name of current link
 
   // Send Message from bot function
   var botSendMsg = function botSendMsg(text, response) {
@@ -130,12 +131,14 @@ bot.on('text', function (msg) {
   // Check if user send Travis Repository link
   var checkLink = msgText.indexOf(travisLink) > -1 || msgText.indexOf(travisLink.slice(8)) > -1;
   if (checkLink) {
+    currLink = msgText;
     getTravisData();
     httpIntervalRequest();
   };
 
   botSendMsg('/help', 'Hi, i\'m @TravisCI_Telegam_Bot. I will notify you each time when your Travis CI build is done. You can read more on https://github.com/artemgurzhii/TravisCI_Telegam_Bot.\n\nTo start please send me your Travis CI link.');
   botSendMsg('/how', 'You send me your Tavis CI repository link. Example: \nhttps://travis-ci.org/twbs/bootstrap \nThen I will watch for changes and will notify you each time when your build is done. \n\nI will also include some basic information about your build. \nCurrently i can watch only one repository from each user.');
+  botSendMsg('/link', currLink);
   botSendMsg('Yes', 'Ok, now I will start watching for changes. Since know I will notify you each time when your Travis CI build is done.');
   botSendMsg('No', 'Ok, than send me link you want to watch');
 });
