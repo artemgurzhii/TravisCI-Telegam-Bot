@@ -61,7 +61,6 @@ bot.on('text', function (msg) {
   var getTravisData = function getTravisData() {
 
     var slicing = void 0;
-
     if (msgText.indexOf('https' > -1)) {
       slicing = msgText.slice(msgText.indexOf('https'), msgText.indexOf(' ', msgText.lastIndexOf('/')));
     } else {
@@ -162,17 +161,3 @@ bot.on('text', function (msg) {
   botSendMsg('No', 'Ok, than send me link you want to watch');
   botSendMsg('/link', linkMessage);
 });
-
-a = 'xasfasf https://travis-ci.org/emberjs/ember.js asfasfasf';
-var x = a.slice(a.indexOf('https'), a.lastIndexOf(' '));
-var y = x.replace(/\s/g, '');
-
-a = 'xasfasf travis-ci.org/emberjs/ember.js asfasfasf';
-var x = a.slice(a.indexOf('travis'), a.lastIndexOf(' '));
-var y = x.replace(/\s/g, '');
-
-if (a.indexOf('https' > -1)) {
-  var x = a.slice(a.indexOf('https'), a.lastIndexOf(' '));
-} else {
-  var x = a.slice(a.indexOf('travis') - 5, a.lastIndexOf(' '));
-}

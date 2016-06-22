@@ -139,20 +139,3 @@ bot.on('text', msg => {     // when user sending message
   botSendMsg('/link', linkMessage);
 
 });
-
-
-
-a = 'xasfasf https://travis-ci.org/emberjs/ember.js asfasfasf'
-var x = a.slice(a.indexOf('https'), a.lastIndexOf(' '));
-var y = x.replace(/\s/g, '');
-
-
-a = 'xasfasf travis-ci.org/emberjs/ember.js asfasfasf'
-var x = a.slice(a.indexOf('travis'), a.lastIndexOf(' '));
-var y = x.replace(/\s/g, '');
-
-if (a.indexOf('https' > -1)) {
-  var x = a.slice(a.indexOf('https'), a.lastIndexOf(' '));
-} else {
-  var x = a.slice(a.indexOf('travis') - 5, a.lastIndexOf(' '));
-}
