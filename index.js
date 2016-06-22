@@ -92,6 +92,9 @@ bot.on('text', function (msg) {
       response.on('data', function (data) {
         str += data;
       });
+      response.on('error', function () {
+        bot.sendMessage(chatID, 'It\'s look like you send invalid link. Please send valid link.');
+      });
       response.on('end', function () {
         var parsed = JSON.parse(str); // parsing received data
         prevBuild = parsed.last_build_number; // ssigning previous build number to prevBuild

@@ -76,6 +76,9 @@ bot.on('text', msg => {     // when user sending message
       response.on('data', data => {
         str += data;
       });
+      response.on('error', () => {
+        bot.sendMessage(chatID, 'It\'s look like you send invalid link. Please send valid link.');
+      });
       response.on('end', () => {
         const parsed = JSON.parse(str);       // parsing received data
         prevBuild = parsed.last_build_number; // ssigning previous build number to prevBuild
@@ -94,7 +97,7 @@ bot.on('text', msg => {     // when user sending message
           str += data;                      // pass data to string
         });
         response.on('end', () => {              // when request is done
-          const parsed = JSON.parse(str);       // parsing JSON data
+          let parsed = JSON.parse(str);         // parsing JSON data
           currBuild = parsed.last_build_number; // assigning current build number
           if (prevBuild !== currBuild && parsed.last_build_finished_at) {  // if prevBuild !== currBuild and build done
 
