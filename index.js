@@ -20,6 +20,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var token = '227706347:AAF-Iq5fV8L4JYdk3g5wcU-z1eK1dd4sKa0'; // authorization token
 // importing telegram bot node api
+var travis = "https://travis-ci.org"; // using for getting json data and slicing strings
 var bot = new _nodeTelegramBotApi2.default(token, { polling: true }); // initializing new bot
 var opts = { // keyboard options
   reply_markup: {
@@ -40,15 +41,15 @@ var server = app.listen(process.env.PORT, function () {
 
 bot.on('text', function (msg) {
   // when user sending message
-  var chatID = msg.chat.id; // Saving user chat id from who bot received message
-  var msgText = msg.text; // Getting text content
-  var travisLink = "https://travis-ci.org"; // Using for getting json data and slicing strings
+  var chatID = msg.chat.id; // saving user chat id from who bot received message
+  var msgText = msg.text; // getting text content
   var userID = void 0; // need to have this values in global scope
   var userRepo = void 0; // need to have this values in global scope
   var options = void 0; // options for http request json data
   var prevBuild = void 0; // storing number of previous build
   var currBuild = void 0; // storing number of current build
   var currLink = void 0; // storing here name of current link
+  var linkMessage = void 0; // text message on /link command
 
   // Send Message from bot function
   var botSendMsg = function botSendMsg(text, response) {
@@ -129,21 +130,22 @@ bot.on('text', function (msg) {
   };
 
   // Check if user send Travis Repository link
-  var checkLink = msgText.indexOf(travisLink) > -1 || msgText.indexOf(travisLink.slice(8)) > -1;
+  var checkLink = msgText.indexOf(travis) > -1 || msgText.indexOf(travis.slice(8)) > -1;
   if (checkLink) {
     currLink = msgText;
     getTravisData();
     httpIntervalRequest();
   };
 
+  if (currLink) {
+    linkMessage = 'Hi, your link is ' + currLink;
+  } else {
+    linkMessage = 'Hi, you have no watched links. Send me your link and I will start watching for you changes and will notify you each time when your build is done.';
+  }
+
   botSendMsg('/help', 'Hi, i\'m @TravisCI_Telegam_Bot. I will notify you each time when your Travis CI build is done. You can read more on https://github.com/artemgurzhii/TravisCI_Telegam_Bot.\n\nTo start please send me your Travis CI link.');
-  botSendMsg('/how', 'You send me your Tavis CI repository link. Example: \nhttps://travis-ci.org/twbs/bootstrap \nThen I will watch for changes and will notify you each time when your build is done. \n\nI will also include some basic information about your build. \nCurrently i can watch only one repository from each user.');
+  botSendMsg('/how', 'You send me your Tavis CI repository link. Example: \nhttps://travis-ci.org/twbs/bootstrap \nThen I will watch for changes and will notify you each time when your build is done. \n\nI will also include some basic information about your build. \nCurrently I can watch only one repository from each user.');
   botSendMsg('Yes', 'Ok, now I will start watching for changes. Since know I will notify you each time when your Travis CI build is done.');
   botSendMsg('No', 'Ok, than send me link you want to watch');
-
-  if (currLink === undefined) {
-    botSendMsg('/link', 'Hi, you have no watched links. Send me your link and I will start watching for you changes and will notify you each time when your build is done.');
-  } else {
-    botSendMsg('/link', 'Hi, your link is ' + currLink);
-  }
+  botSendMsg('/link', 'Hi, your link is ' + currLink);
 });

@@ -3,6 +3,7 @@ import https from 'https';                                      // importing htt
 import express from 'express';
 import { version as packageInfo } from './package.json';
 const token = '227706347:AAF-Iq5fV8L4JYdk3g5wcU-z1eK1dd4sKa0';  // authorization token
+const travis = "https://travis-ci.org";                         // using for getting json data and slicing strings
 let bot = new TelegramBot(token, {polling: true});              // initializing new bot
 const opts = {              // keyboard options
   reply_markup: {
@@ -16,7 +17,7 @@ const opts = {              // keyboard options
 
 let app = express();
 
-app.get('/', function (req, res) {
+app.get('/', (req, res) => {
   res.json({ version: packageInfo });
 });
 
@@ -24,17 +25,16 @@ let server = app.listen(process.env.PORT, () => {
   console.log('Web server started at http://%s:%s', server.address().address, server.address().port);
 });
 
-
-bot.on('text', msg => {                       // when user sending message
-  const chatID = msg.chat.id;                 // Saving user chat id from who bot received message
-  const msgText = msg.text;                   // Getting text content
-  const travisLink = "https://travis-ci.org"; // Using for getting json data and slicing strings
-  let userID;                                 // need to have this values in global scope
-  let userRepo;                               // need to have this values in global scope
-  let options;                                // options for http request json data
-  let prevBuild;                              // storing number of previous build
-  let currBuild;                              // storing number of current build
-  let currLink;                               // storing here name of current link
+bot.on('text', msg => {     // when user sending message
+  let chatID = msg.chat.id; // saving user chat id from who bot received message
+  let msgText = msg.text;   // getting text content
+  let userID;               // need to have this values in global scope
+  let userRepo;             // need to have this values in global scope
+  let options;              // options for http request json data
+  let prevBuild;            // storing number of previous build
+  let currBuild;            // storing number of current build
+  let currLink;             // storing here name of current link
+  let linkMessage;          // text message on /link command
 
   // Send Message from bot function
   const botSendMsg = (text, response) => {  // Function takes two arguments, bot command, and bot response
@@ -107,22 +107,23 @@ bot.on('text', msg => {                       // when user sending message
   };
 
   // Check if user send Travis Repository link
-  const checkLink = msgText.indexOf(travisLink) > -1 || msgText.indexOf(travisLink.slice(8)) > -1;
+  const checkLink = msgText.indexOf(travis) > -1 || msgText.indexOf(travis.slice(8)) > -1;
   if (checkLink) {
     currLink = msgText;
     getTravisData();
     httpIntervalRequest();
   };
 
+  if (currLink) {
+    linkMessage = `Hi, your link is ${currLink}`;
+  } else {
+    linkMessage = 'Hi, you have no watched links. Send me your link and I will start watching for you changes and will notify you each time when your build is done.';
+  }
+
   botSendMsg('/help', `Hi, i'm @TravisCI_Telegam_Bot. I will notify you each time when your Travis CI build is done. You can read more on https://github.com/artemgurzhii/TravisCI_Telegam_Bot.\n\nTo start please send me your Travis CI link.`);
-  botSendMsg('/how', 'You send me your Tavis CI repository link. Example: \nhttps://travis-ci.org/twbs/bootstrap \nThen I will watch for changes and will notify you each time when your build is done. \n\nI will also include some basic information about your build. \nCurrently i can watch only one repository from each user.');
+  botSendMsg('/how', 'You send me your Tavis CI repository link. Example: \nhttps://travis-ci.org/twbs/bootstrap \nThen I will watch for changes and will notify you each time when your build is done. \n\nI will also include some basic information about your build. \nCurrently I can watch only one repository from each user.');
   botSendMsg('Yes', 'Ok, now I will start watching for changes. Since know I will notify you each time when your Travis CI build is done.');
   botSendMsg('No', 'Ok, than send me link you want to watch');
-
-  if (currLink === undefined) {
-    botSendMsg('/link', 'Hi, you have no watched links. Send me your link and I will start watching for you changes and will notify you each time when your build is done.');
-  } else {
-    botSendMsg('/link', `Hi, your link is ${currLink}`);
-  }
+  botSendMsg('/link', `Hi, your link is ${currLink}`);
 
 });
