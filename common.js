@@ -3,7 +3,7 @@ import https from 'https';                                      // importing htt
 import express from 'express';
 import { version as packageInfo } from './package.json';
 const token = '227706347:AAF-Iq5fV8L4JYdk3g5wcU-z1eK1dd4sKa0';  // authorization token
-const travis = "https://travis-ci.org";                         // using for getting json data and slicing strings
+const travis = 'https://travis-ci.org';                         // using for getting json data and slicing strings
 let bot = new TelegramBot(token, {polling: true});              // initializing new bot
 const opts = {              // keyboard options
   reply_markup: {
@@ -16,14 +16,11 @@ const opts = {              // keyboard options
 };
 
 let app = express();
-
 app.get('/', (req, res) => {
-  res.json({ version: packageInfo });
+  res.send('This app running on Heroku');
 });
-
-let server = app.listen(process.env.PORT, () => {
-  console.log('Web server started at http://%s:%s', server.address().address, server.address().port);
-});
+app.listen(8080);
+console.log('Running on http://localhost:8080')
 
 bot.on('text', msg => {     // when user sending message
   let chatID = msg.chat.id; // saving user chat id from who bot received message
@@ -45,20 +42,26 @@ bot.on('text', msg => {     // when user sending message
   const getTravisData = () => {
 
     let slicing;
-    if (msgText.indexOf('https' > -1)) {
-      slicing = msgText.slice(msgText.indexOf('https'), msgText.indexOf(' ', msgText.lastIndexOf('/')));
+    let slicedLink;
+    if (msgText.indexOf(' ') > -1) {
+      if (msgText.indexOf('https') > -1) {
+        slicing = msgText.slice(msgText.indexOf('https'), msgText.indexOf(' ', msgText.lastIndexOf('/')));
+        slicedLink = slicing.replace(/\s/g, '');
+      } else {
+        slicing = msgText.slice(msgText.indexOf('travis'), msgText.indexOf(' ', msgText.lastIndexOf('/')));
+        slicedLink = slicing.replace(/\s/g, '');
+      }
     } else {
-      slicing = msgText.slice(msgText.indexOf('travis'), msgText.indexOf(' ', msgText.lastIndexOf('/')));
+      slicedLink = msgText;
     }
-
-    let slicedLink = slicing.replace(/\s/g, '');
 
     userID = slicedLink.slice(slicedLink.lastIndexOf('org') + 4, slicedLink.lastIndexOf('/')); // getting user id
     userRepo = slicedLink.slice(slicedLink.lastIndexOf('/'));                                  // getting user repository name
 
     bot.sendMessage(chatID, `Ok, ${slicedLink} is that link you want to watch?`, opts);
+    bot.sendMessage(chatID, slicedLink);
 
-    currLink = slicedLink;
+    currLink = `https://travis-ci.org/${userID}${userRepo}`;
 
     // setting options for requested JSON file
     options = {
@@ -76,9 +79,6 @@ bot.on('text', msg => {     // when user sending message
       response.on('data', data => {
         str += data;
       });
-      response.on('error', () => {
-        bot.sendMessage(chatID, 'It\'s look like you send invalid link. Please send valid link.');
-      });
       response.on('end', () => {
         const parsed = JSON.parse(str);       // parsing received data
         prevBuild = parsed.last_build_number; // ssigning previous build number to prevBuild
@@ -86,7 +86,9 @@ bot.on('text', msg => {     // when user sending message
           currBuild = prevBuild;              // assign it to prevBuild
         }
       });
-    }).end();
+    }).on('error', () => {
+      bot.sendMessage(chatID, 'It\'s look like you send invalid link. Please send valid link.');
+    });
   };
 
   let httpIntervalRequest = () => {         // creating function which will be called when user sends travis link

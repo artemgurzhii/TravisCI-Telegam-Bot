@@ -20,7 +20,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var token = '227706347:AAF-Iq5fV8L4JYdk3g5wcU-z1eK1dd4sKa0'; // authorization token
 // importing telegram bot node api
-var travis = "https://travis-ci.org"; // using for getting json data and slicing strings
+var travis = 'https://travis-ci.org'; // using for getting json data and slicing strings
 var bot = new _nodeTelegramBotApi2.default(token, { polling: true }); // initializing new bot
 var opts = { // keyboard options
   reply_markup: {
@@ -30,14 +30,11 @@ var opts = { // keyboard options
 };
 
 var app = (0, _express2.default)();
-
 app.get('/', function (req, res) {
-  res.json({ version: _package.version });
+  res.send('This app running on Heroku');
 });
-
-var server = app.listen(process.env.PORT, function () {
-  console.log('Web server started at http://%s:%s', server.address().address, server.address().port);
-});
+app.listen(8080);
+console.log('Running on http://localhost:8080');
 
 bot.on('text', function (msg) {
   // when user sending message
@@ -61,20 +58,26 @@ bot.on('text', function (msg) {
   var getTravisData = function getTravisData() {
 
     var slicing = void 0;
-    if (msgText.indexOf('https' > -1)) {
-      slicing = msgText.slice(msgText.indexOf('https'), msgText.indexOf(' ', msgText.lastIndexOf('/')));
+    var slicedLink = void 0;
+    if (msgText.indexOf(' ') > -1) {
+      if (msgText.indexOf('https') > -1) {
+        slicing = msgText.slice(msgText.indexOf('https'), msgText.indexOf(' ', msgText.lastIndexOf('/')));
+        slicedLink = slicing.replace(/\s/g, '');
+      } else {
+        slicing = msgText.slice(msgText.indexOf('travis'), msgText.indexOf(' ', msgText.lastIndexOf('/')));
+        slicedLink = slicing.replace(/\s/g, '');
+      }
     } else {
-      slicing = msgText.slice(msgText.indexOf('travis'), msgText.indexOf(' ', msgText.lastIndexOf('/')));
+      slicedLink = msgText;
     }
-
-    var slicedLink = slicing.replace(/\s/g, '');
 
     userID = slicedLink.slice(slicedLink.lastIndexOf('org') + 4, slicedLink.lastIndexOf('/')); // getting user id
     userRepo = slicedLink.slice(slicedLink.lastIndexOf('/')); // getting user repository name
 
     bot.sendMessage(chatID, 'Ok, ' + slicedLink + ' is that link you want to watch?', opts);
+    bot.sendMessage(chatID, slicedLink);
 
-    currLink = slicedLink;
+    currLink = 'https://travis-ci.org/' + userID + userRepo;
 
     // setting options for requested JSON file
     options = {
@@ -92,9 +95,6 @@ bot.on('text', function (msg) {
       response.on('data', function (data) {
         str += data;
       });
-      response.on('error', function () {
-        bot.sendMessage(chatID, 'It\'s look like you send invalid link. Please send valid link.');
-      });
       response.on('end', function () {
         var parsed = JSON.parse(str); // parsing received data
         prevBuild = parsed.last_build_number; // ssigning previous build number to prevBuild
@@ -103,7 +103,9 @@ bot.on('text', function (msg) {
           currBuild = prevBuild; // assign it to prevBuild
         }
       });
-    }).end();
+    }).on('error', function () {
+      bot.sendMessage(chatID, 'It\'s look like you send invalid link. Please send valid link.');
+    });
   };
 
   var httpIntervalRequest = function httpIntervalRequest() {
