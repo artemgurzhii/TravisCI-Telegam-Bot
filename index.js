@@ -30,11 +30,14 @@ var opts = { // keyboard options
 };
 
 var app = (0, _express2.default)();
+
 app.get('/', function (req, res) {
-  res.send('This app running on Heroku');
+  res.json({ version: _package.version });
 });
-app.listen(8080);
-console.log('Running on http://localhost:8080');
+
+var server = app.listen(process.env.PORT, function () {
+  console.log('Web server started at http://%s:%s', server.address().address, server.address().port);
+});
 
 bot.on('text', function (msg) {
   // when user sending message
@@ -47,6 +50,8 @@ bot.on('text', function (msg) {
   var currBuild = void 0; // storing number of current build
   var currLink = void 0; // storing here name of current link
   var linkMessage = void 0; // text message on /link command
+  var slicing = void 0; // using this variables for slicing user msg link
+  var slicedLink = void 0; // using this variables for slicing user msg link
 
   // Send Message from bot function
   var botSendMsg = function botSendMsg(text, response) {
@@ -57,8 +62,6 @@ bot.on('text', function (msg) {
   // Function for getting JSON data file for user repository
   var getTravisData = function getTravisData() {
 
-    var slicing = void 0;
-    var slicedLink = void 0;
     if (msgText.indexOf(' ') > -1) {
       if (msgText.indexOf('https') > -1) {
         slicing = msgText.slice(msgText.indexOf('https'), msgText.indexOf(' ', msgText.lastIndexOf('/')));
@@ -75,9 +78,6 @@ bot.on('text', function (msg) {
     userRepo = slicedLink.slice(slicedLink.lastIndexOf('/')); // getting user repository name
 
     bot.sendMessage(chatID, 'Ok, ' + slicedLink + ' is that link you want to watch?', opts);
-    bot.sendMessage(chatID, slicedLink);
-
-    currLink = 'https://travis-ci.org/' + userID + userRepo;
 
     // setting options for requested JSON file
     options = {
@@ -154,8 +154,8 @@ bot.on('text', function (msg) {
     httpIntervalRequest();
   };
 
-  if (currLink) {
-    linkMessage = 'Hi, your link is ' + currLink;
+  if (slicedLink) {
+    linkMessage = 'Hi, your link is ' + slicedLink;
   } else {
     linkMessage = 'Hi, you have no watched links. Send me your link and I will start watching for you changes and will notify you each time when your build is done.';
   }
