@@ -2,7 +2,7 @@ import TelegramBot from 'node-telegram-bot-api';                // importing tel
 import https from 'https';                                      // importing https to make requests to travis json user data
 import express from 'express';
 import { version as packageInfo } from './package.json';
-const token = '227706347:AAF-Iq5fV8L4JYdk3g5wcU-z1eK1dd4sKa0';  // authorization token
+const token = '';  // authorization token
 const travis = 'https://travis-ci.org';                         // using for getting json data and slicing strings
 let bot = new TelegramBot(token, {polling: true});              // initializing new bot
 const opts = {              // keyboard options
@@ -17,7 +17,7 @@ const opts = {              // keyboard options
 
 let app = express();
 
-app.get('/', function (req, res) {
+app.get('/', (req, res) => {
   res.json({ version: packageInfo });
 });
 
@@ -45,7 +45,6 @@ bot.on('text', msg => {     // when user sending message
 
   // Function for getting JSON data file for user repository
   const getTravisData = () => {
-
     if (msgText.indexOf(' ') > -1) {
       if (msgText.indexOf('https') > -1) {
         slicing = msgText.slice(msgText.indexOf('https'), msgText.indexOf(' ', msgText.lastIndexOf('/')));
@@ -61,8 +60,6 @@ bot.on('text', msg => {     // when user sending message
     userID = slicedLink.slice(slicedLink.lastIndexOf('org') + 4, slicedLink.lastIndexOf('/')); // getting user id
     userRepo = slicedLink.slice(slicedLink.lastIndexOf('/'));                                  // getting user repository name
 
-    bot.sendMessage(chatID, `Ok, ${slicedLink} is that link you want to watch?`, opts);
-
     // setting options for requested JSON file
     options = {
       host: 'api.travis-ci.org',
@@ -74,21 +71,24 @@ bot.on('text', msg => {     // when user sending message
     };
 
     // making request to user travis link to get current build status
-    https.request(options, response => {
+    let request = https.request(options, response => {
       let str = '';
+
       response.on('data', data => {
         str += data;
       });
       response.on('end', () => {
         const parsed = JSON.parse(str);       // parsing received data
         prevBuild = parsed.last_build_number; // ssigning previous build number to prevBuild
-        if (!(!!currBuild)) {                 // if currBuild doesn't have value
-          currBuild = prevBuild;              // assign it to prevBuild
+        currBuild = prevBuild;                // assign it to prevBuild
+        if (parsed.file) {                    // parsed.file is shown if reposotiry where request where made doesn't exist
+          bot.sendMessage(chatID, `${commands.messages.invalidLink}`);
+        } else {
+          bot.sendMessage(chatID, `${commands.messages.validLink} ${slicedLink}`);
         }
       });
-    }).on('error', () => {
-      bot.sendMessage(chatID, 'It\'s look like you send invalid link. Please send valid link.');
     });
+    request.end();
   };
 
   let httpIntervalRequest = () => {         // creating function which will be called when user sends travis link
@@ -137,10 +137,34 @@ bot.on('text', msg => {     // when user sending message
     linkMessage = 'Hi, you have no watched links. Send me your link and I will start watching for you changes and will notify you each time when your build is done.';
   }
 
-  botSendMsg('/help', `Hi, i'm @TravisCI_Telegam_Bot. I will notify you each time when your Travis CI build is done. You can read more on https://github.com/artemgurzhii/TravisCI_Telegam_Bot.\n\nTo start please send me your Travis CI link.`);
-  botSendMsg('/how', 'You send me your Tavis CI repository link. Example: \nhttps://travis-ci.org/twbs/bootstrap \nThen I will watch for changes and will notify you each time when your build is done. \n\nI will also include some basic information about your build. \nCurrently I can watch only one repository from each user.');
-  botSendMsg('Yes', 'Ok, now I will start watching for changes. Since know I will notify you each time when your Travis CI build is done.');
-  botSendMsg('No', 'Ok, than send me link you want to watch');
-  botSendMsg('/link', linkMessage);
+  const commands = {
+    how: {
+      commandName: '/how',
+      commandText: 'how does it work',
+      msgText: 'You send me your Tavis CI repository link. Example: \nhttps://travis-ci.org/twbs/bootstrap \nThen I will watch for changes and will notify you each time when your build is done. \n\nI will also include some basic information about your build. \nCurrently i can watch only one repository from each user.'
+    },
+    link: {
+      commandName: '/link',
+      commandText: 'get the currently watched link',
+      msgText: linkMessage
+    },
+    start: {
+      commandName: '/start',
+      commandText: 'get main description of what this bot can do',
+      msgText: 'Hi, I\'m @TravisCI_Telegam_Bot. Just send me link to Travis CI repository and I will notify you each time when your build is done.'
+    },
+    messages: {
+      invalidLink: 'It\'s look like you send invalid link. Please send valid link.',
+      validLink: 'Ok, since now I will watch for changes in'
+    }
+  };
+
+  botSendMsg(`${commands.how.commandName}`, `${commands.how.msgText}`);
+  botSendMsg(`${commands.link.commandName}`, `${commands.link.msgText}`);
+  botSendMsg(`${commands.start.commandName}`, `${commands.start.msgText}\n
+    ${commands.how.commandName} - ${commands.how.commandText}
+    ${commands.link.commandName} - ${commands.link.commandText}
+    ${commands.start.commandName} - ${commands.start.commandText}
+  `);
 
 });
