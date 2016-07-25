@@ -7,17 +7,13 @@
   "homepage": "https://github.com/artemgurzhii/TravisCI-Telegam-Bot",
   "scripts": {
     "start": "babel common.js --out-file index.js && node index",
-    "work": "node index"
+    "work": "node index",
+    "test": "mocha --compilers js:babel-core/register"
   },
   "bugs": {
     "url": "https://github.com/artemgurzhii/TravisCI-Telegam-Bot/issues"
   },
   "license": "MIT",
-  "devDependencies": {
-    "babel": "^6.5.2",
-    "babel-cli": "^6.10.1",
-    "babel-preset-es2015": "^6.9.0"
-  },
   "repository": {
     "type": "git",
     "url": "https://github.com/artemgurzhii/TravisCI-Telegam-Bot"
@@ -37,6 +33,13 @@
     "index.js",
     "common.js"
   ],
+  "devDependencies": {
+    "babel": "^6.5.2",
+    "babel-cli": "^6.10.1",
+    "babel-preset-es2015": "^6.9.0",
+    "chai": "^3.5.0",
+    "mocha": "^2.5.3"
+  },
   "dependencies": {
     "express": "^4.14.0",
     "node-telegram-bot-api": "^0.21.1"

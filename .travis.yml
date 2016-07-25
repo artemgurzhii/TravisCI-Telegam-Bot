@@ -1,0 +1,14 @@
+language: node_js
+
+node_js:
+  - "6"
+  - "6.1"
+  - "5.11"
+  - "0.6"
+  - "iojs"
+
+install:
+  - npm install babel babel-core babel-register babel-preset-es2015 mocha chai
+
+script:
+  - npm run test
