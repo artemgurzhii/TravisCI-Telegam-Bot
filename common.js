@@ -169,3 +169,7 @@ bot.on("text", msg => {     // when user sending message
   `);
 
 });
+
+
+// TODO: Time displayed in message should be locally
+// TODO: Fix '/link' command. It should send curently watching link
