@@ -40,12 +40,16 @@ bot.on('text', msg => {     // when user sending message
   let slicing;     // using this variables for slicing user msg link
   let slicedLink;  // using this variables for slicing user msg link
 
-  // Send Message from bot function
-  const botSendMsg = (text, response) => {  // Function takes two arguments, bot command, and bot response
+  // Function to send Message to user
+  // It takes two arguments, bot command(text), and bot response(response)
+  // If msgText match text then send msg with response parameter
+  const botSendMsg = (text, response) => {
     return msgText === text ? bot.sendMessage(chatID, response) : false;
   };
 
   // Function for getting JSON data file for user repository
+  // This function will slice user msg if there any spaces, and other
+  // then it will slice msg to get user ID and repository name
   const getTravisData = () => {
     if (msgText.indexOf(' ') > -1) {
       if (msgText.indexOf('https') > -1) {
@@ -59,8 +63,8 @@ bot.on('text', msg => {     // when user sending message
       slicedLink = msgText;
     }
 
-    userID = slicedLink.slice(slicedLink.lastIndexOf('org') + 4, slicedLink.lastIndexOf('/')); // getting user id
-    userRepo = slicedLink.slice(slicedLink.lastIndexOf('/'));                                  // getting user repository name
+    userID = slicedLink.slice(slicedLink.lastIndexOf('org') + 4, slicedLink.lastIndexOf('/'));
+    userRepo = slicedLink.slice(slicedLink.lastIndexOf('/'));
 
     // setting options for requested JSON file
     options = {
@@ -72,7 +76,8 @@ bot.on('text', msg => {     // when user sending message
       }
     };
 
-    // making request to user travis link to get current build status
+    // Function to make http request to users travis api json file
+    // to get current build info
     let request = https.request(options, response => {
       let str = '';
 
@@ -93,12 +98,22 @@ bot.on('text', msg => {     // when user sending message
     request.end();
   };
 
-  let httpIntervalRequest = () => {         // creating function which will be called when user sends travis link
-    setInterval(() => {                     // creating setInterval to make http request each 7 seconds
-      https.request(options, response => {  // defining options
-        let str = '';                       // creating string where all json will be stored
-        response.on('data', data => {       // while getting data
-          str += data;                      // pass data to string
+  // Function to make http request to users travis api json file, which will be called each 7 seconds
+  // getting current build status and build number and storing them
+  // when will making next http request it will compare current build status locally stored and in json file remotelly
+  // and check if last build has ended
+  // will send message to user with basic info about his build, like:
+
+  // Hi, your build at ember.js repository just has ended.
+  // Your build completed successfully.
+  // Build number was 19444.
+  // Your build started at 09:56:47 and finished at 10:05:39
+  let httpIntervalRequest = () => {
+    setInterval(() => {                    // creating setInterval to make http request each 7 seconds
+      https.request(options, response => { // defining options
+        let str = '';                      // creating string where all json will be stored
+        response.on('data', data => {      // while getting data
+          str += data;                     // pass data to string
         });
         response.on('end', () => {              // when request is done
           let parsed = JSON.parse(str);         // parsing JSON data
