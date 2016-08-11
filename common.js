@@ -2,32 +2,33 @@ import TelegramBot from 'node-telegram-bot-api';                // importing tel
 import https from 'https';                                      // importing https to make requests to travis json user data
 import express from 'express';
 import { version as packageInfo } from './package.json';
-const token = '227706347:AAF-Iq5fV8L4JYdk3g5wcU-z1eK1dd4sKa0';  // authorization token
+const token = '';  // authorization token
 const travis = 'https://travis-ci.org';                         // using for getting json data and slicing strings
+const port = 8000;
 let bot = new TelegramBot(token, {polling: true});              // initializing new bot
-const opts = {  // keyboard options
+
+// keyboard options, it will appear only once whent it's required
+const opts = {
   reply_markup: {
     'keyboard': [
       ['Yes'],
       ['No']
     ],
-    one_time_keyboard: true // keyboard will shown only once and when it's required
+    one_time_keyboard: true
   }
 };
 
+// Creating express app
 let app = express();
 
-app.get('/', (req, res) => {
-  return res.json({ version: packageInfo });
-});
+// dev server
+app.get('/', (req, res) => res.json({ version: packageInfo }));
+app.listen(port, () => console.log(`Server running on http://0.0.0.0:${port}`));
 
-let server = app.listen(process.env.PORT, () => {
-  console.log(`Server at http://${server.address().address}:${server.address().port}`);
-});
-
-bot.on('text', msg => {     // when user sending message
+// main function to execute when getting message fom user
+bot.on('text', msg => {
   let chatID = msg.chat.id; // saving user chat id from who bot received message
-  let msgText = msg.text;   // getting text content
+  let msgText = msg.text;   // getting text content from message
 
   // variables to declare in global scope
   let userID;      // slice msg to get user ID
@@ -49,7 +50,6 @@ bot.on('text', msg => {     // when user sending message
 
   // Function for getting JSON data file for user repository
   // This function will slice user msg if there any spaces, and other
-  // then it will slice msg to get user ID and repository name
   const getTravisData = () => {
     if (msgText.indexOf(' ') > -1) {
       if (msgText.indexOf('https') > -1) {
@@ -63,10 +63,11 @@ bot.on('text', msg => {     // when user sending message
       slicedLink = msgText;
     }
 
+    // slicing msg to get user ID and repository name
     userID = slicedLink.slice(slicedLink.lastIndexOf('org') + 4, slicedLink.lastIndexOf('/'));
     userRepo = slicedLink.slice(slicedLink.lastIndexOf('/'));
 
-    // setting options for requested JSON file
+    // setting options for HTTP request JSON file
     options = {
       host: 'api.travis-ci.org',
       path: `/repositories/${userID}${userRepo}.json`,
