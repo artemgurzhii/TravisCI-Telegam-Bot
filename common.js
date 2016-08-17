@@ -193,3 +193,4 @@ bot.on('text', msg => {
 // TODO: Fix '/link' command. It should send curently watching link
 // TODO: Solve problem with node(express)
 // TODO: problem with not visiting link(website)
+// TODO: add tests
