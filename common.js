@@ -191,3 +191,5 @@ bot.on('text', msg => {
 
 // TODO: Time displayed in message should be locally
 // TODO: Fix '/link' command. It should send curently watching link
+// TODO: Solve problem with node(express)
+// TODO: problem with not visiting link(website)
