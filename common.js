@@ -2,7 +2,7 @@ import TelegramBot from 'node-telegram-bot-api';                // importing tel
 import https from 'https';                                      // importing https to make requests to travis json user data
 import express from 'express';
 import { version as packageInfo } from './package.json';
-const token = '';  // authorization token
+const token = '227706347:AAF-Iq5fV8L4JYdk3g5wcU-z1eK1dd4sKa0';  // authorization token
 const travis = 'https://travis-ci.org';                         // using for getting json data and slicing strings
 const port = 8000;
 let bot = new TelegramBot(token, {polling: true});              // initializing new bot
@@ -23,10 +23,32 @@ let app = express();
 
 // dev server
 app.get('/', (req, res) => res.json({ version: packageInfo }));
-app.listen(port, () => console.log(`Server running on http://0.0.0.0:${port}`));
 
 // main function to execute when getting message fom user
 bot.on('text', msg => {
+
+  const commands = {
+    how: {
+      commandName: '/how',
+      commandText: 'how does it work',
+      msgText: 'You send me your Tavis CI repository link. Example: \nhttps://travis-ci.org/twbs/bootstrap \nThen I will watch for changes and will notify you each time when your build is done. \n\nI will also include some basic information about your build. \nCurrently i can watch only one repository from each user.'
+    },
+    link: {
+      commandName: '/link',
+      commandText: 'get the currently watched link',
+      msgText: linkMessage
+    },
+    start: {
+      commandName: '/start',
+      commandText: 'get main description of what this bot can do',
+      msgText: 'Hi, I\'m @TravisCI_Telegam_Bot. Just send me link to Travis CI repository and I will notify you each time when your build is done.'
+    },
+    messages: {
+      invalidLink: 'It\'s look like you send invalid link. Please send valid link.',
+      validLink: 'Ok, since now I will watch for changes in'
+    }
+  };
+
   let chatID = msg.chat.id; // saving user chat id from who bot received message
   let msgText = msg.text;   // getting text content from message
 
@@ -156,28 +178,6 @@ bot.on('text', msg => {
     linkMessage = 'Hi, you have no watched links. Send me your link and I will start watching for you changes and will notify you each time when your build is done.';
   }
 
-  const commands = {
-    how: {
-      commandName: '/how',
-      commandText: 'how does it work',
-      msgText: 'You send me your Tavis CI repository link. Example: \nhttps://travis-ci.org/twbs/bootstrap \nThen I will watch for changes and will notify you each time when your build is done. \n\nI will also include some basic information about your build. \nCurrently i can watch only one repository from each user.'
-    },
-    link: {
-      commandName: '/link',
-      commandText: 'get the currently watched link',
-      msgText: linkMessage
-    },
-    start: {
-      commandName: '/start',
-      commandText: 'get main description of what this bot can do',
-      msgText: 'Hi, I\'m @TravisCI_Telegam_Bot. Just send me link to Travis CI repository and I will notify you each time when your build is done.'
-    },
-    messages: {
-      invalidLink: 'It\'s look like you send invalid link. Please send valid link.',
-      validLink: 'Ok, since now I will watch for changes in'
-    }
-  };
-
   botSendMsg(`${commands.how.commandName}`, `${commands.how.msgText}`);
   botSendMsg(`${commands.link.commandName}`, `${commands.link.msgText}`);
   botSendMsg(`${commands.start.commandName}`, `${commands.start.msgText}\n
@@ -194,3 +194,5 @@ bot.on('text', msg => {
 // TODO: Solve problem with node(express)
 // TODO: problem with not visiting link(website)
 // TODO: add tests
+
+app.listen(port, () => console.log(`Server running on http://0.0.0.0:${port}`));
