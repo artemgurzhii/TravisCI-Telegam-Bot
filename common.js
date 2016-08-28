@@ -180,11 +180,11 @@ bot.on('text', msg => {
 
   botSendMsg(`${commands.how.commandName}`, `${commands.how.msgText}`);
   botSendMsg(`${commands.link.commandName}`, `${commands.link.msgText}`);
-  botSendMsg(`${commands.start.commandName}`, `${commands.start.msgText}\n
-    ${commands.how.commandName} - ${commands.how.commandText}
-    ${commands.link.commandName} - ${commands.link.commandText}
-    ${commands.start.commandName} - ${commands.start.commandText}
-  `);
+  botSendMsg(`${commands.start.commandName}`, `${commands.start.msgText}
+  ${commands.how.commandName} - ${commands.how.commandText}
+  ${commands.link.commandName} - ${commands.link.commandText}
+  ${commands.start.commandName} - ${commands.start.commandText}
+`);
 
 });
 
