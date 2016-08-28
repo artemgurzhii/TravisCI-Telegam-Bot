@@ -1,2 +1,3 @@
-alias ghc="git commit -am"
-alias ghp="git push heroku master"
+push() {
+  git add . && git commit -am "$1" && git push heroku master
+}
