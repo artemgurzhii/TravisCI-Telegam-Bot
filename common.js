@@ -3,8 +3,8 @@ import telegram from 'node-telegram-bot-api';                   // importing tel
 import https from 'https';                                      // importing https to make requests to travis json user data
 
 // Telegram bot initialization
-const token = '227706347:AAF-Iq5fV8L4JYdk3g5wcU-z1eK1dd4sKa0';  // authorization token
-let bot = new telegram(token, {polling: true});                 // initializing new bot
+const token = '227706347:AAF-Iq5fV8L4JYdk3g5wcU-z1eK1dd4sKa0'; // authorization token
+let bot = new telegram(token, {polling: true});                // initializing new bot
 
 // main function to execute when getting message fom user
 bot.on('text', msg => {
