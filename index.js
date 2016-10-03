@@ -47,21 +47,19 @@ str+=data; // pass data to string
 var parsed=JSON.parse(str); // parsing JSON data
 currBuild=parsed.last_build_number; // assigning current build number
 if(prevBuild!==currBuild&&parsed.last_build_finished_at){ // if prevBuild !== currBuild and build done
+// bot.sendMessage(chatID, new Date().toLocaleString());
 var buildText=parsed.last_build_status===0?'completed successfully':'failed'; // defining if build failed or passed
 var buildNumber=parsed.last_build_number; // geting build number
-var repoName=parsed.slug.slice(parsed.slug.indexOf('/')+1); // name of repository
 var startedAt=parsed.last_build_started_at; // when build was started
 var finishedAt=parsed.last_build_finished_at; // when build was ended
 var buildStarted=startedAt.slice(startedAt.indexOf('T')+1,startedAt.length-1); // getting pure date
 var buildFinished=finishedAt.slice(finishedAt.indexOf('T')+1,finishedAt.length-1); // getting pure date
-bot.sendMessage(chatID,'Hi, your build at '+repoName+' repository just has ended. \nYour build '+buildText+'. \nBuild number was '+buildNumber+'. \nYour build started at '+buildStarted+' and finished at '+buildFinished);currBuild=parsed.last_build_number; // reassign new variables
+bot.sendMessage(chatID,'Hi, your build at '+userRepo+' repository just has ended. \nYour build '+buildText+'. \nBuild number was '+buildNumber+'. \nYour build started at '+buildStarted+' and finished at '+buildFinished);currBuild=parsed.last_build_number; // reassign new variables
 prevBuild=parsed.last_build_number; // reassign new variables
 }else if(!parsed.last_build_finished_at){ // if user send link during build
 prevBuild=parsed.last_build_number-1; // assign prevBuild number to currBuildNumber - 1
 }});}).end();},7000);}; // Check if user send Travis Repository link
-var checkLink=msgText.includes('https://travis-ci.org')||msgText.includes('https://travis-ci.org'.slice(8));if(checkLink){getTravisData();httpIntervalRequest();};if(slicedLink){linkMessage='Hi, your link is '+slicedLink;slicedLink=slicedLink;}else {linkMessage='Hi, you have no watched links. Send me your link and I will start watching for you changes and will notify you each time when your build is done.';}botSendMsg(''+commands.how.commandName,''+commands.how.msgText);botSendMsg(''+commands.link.commandName,''+commands.link.msgText);botSendMsg(''+commands.start.commandName,commands.start.msgText+'\n  '+commands.how.commandName+' - '+commands.how.commandText+'\n  '+commands.link.commandName+' - '+commands.link.commandText+'\n  '+commands.start.commandName+' - '+commands.start.commandText);}); // TODO: Time displayed in message should be locally
-// TODO: Fix '/link' command. It should send curently watching link
-// TODO: Solve problem with node(express)
+var checkLink=msgText.includes('https://travis-ci.org')||msgText.includes('https://travis-ci.org'.slice(8));if(checkLink){getTravisData();httpIntervalRequest();};if(slicedLink){linkMessage='Hi, your link is '+slicedLink;slicedLink=slicedLink;}else {linkMessage='Hi, you have no watched links. Send me your link and I will start watching for you changes and will notify you each time when your build is done.';}botSendMsg(''+commands.how.commandName,''+commands.how.msgText);botSendMsg(''+commands.link.commandName,''+commands.link.msgText);botSendMsg(''+commands.start.commandName,commands.start.msgText+'\n  '+commands.how.commandName+' - '+commands.how.commandText+'\n  '+commands.link.commandName+' - '+commands.link.commandText+'\n  '+commands.start.commandName+' - '+commands.start.commandText);}); // TODO: Fix '/link' command. It should send curently watching link
 // TODO: problem with not visiting link(website)
 // TODO: add tests
 _https2.default.createServer(bot).listen(8000,function(){return console.log('Server running on http://0.0.0.0:8000');});

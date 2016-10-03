@@ -121,16 +121,15 @@ bot.on('text', msg => {
           let parsed = JSON.parse(str);         // parsing JSON data
           currBuild = parsed.last_build_number; // assigning current build number
           if (prevBuild !== currBuild && parsed.last_build_finished_at) {  // if prevBuild !== currBuild and build done
-
+            // bot.sendMessage(chatID, new Date().toLocaleString());
             let buildText = parsed.last_build_status === 0 ? 'completed successfully' : 'failed'; // defining if build failed or passed
             let buildNumber = parsed.last_build_number;                     // geting build number
-            let repoName = parsed.slug.slice(parsed.slug.indexOf('/') + 1); // name of repository
             let startedAt = parsed.last_build_started_at;                   // when build was started
             let finishedAt = parsed.last_build_finished_at;                 // when build was ended
             let buildStarted = startedAt.slice(startedAt.indexOf('T') + 1, startedAt.length - 1);     // getting pure date
             let buildFinished = finishedAt.slice(finishedAt.indexOf('T') + 1, finishedAt.length - 1); // getting pure date
 
-            bot.sendMessage(chatID, `Hi, your build at ${repoName} repository just has ended. \nYour build ${buildText}. \nBuild number was ${buildNumber}. \nYour build started at ${buildStarted} and finished at ${buildFinished}`);
+            bot.sendMessage(chatID, `Hi, your build at ${userRepo} repository just has ended. \nYour build ${buildText}. \nBuild number was ${buildNumber}. \nYour build started at ${buildStarted} and finished at ${buildFinished}`);
 
             currBuild = parsed.last_build_number;   // reassign new variables
             prevBuild = parsed.last_build_number;   // reassign new variables
@@ -165,9 +164,7 @@ bot.on('text', msg => {
   ${commands.start.commandName} - ${commands.start.commandText}`);
 });
 
-// TODO: Time displayed in message should be locally
 // TODO: Fix '/link' command. It should send curently watching link
-// TODO: Solve problem with node(express)
 // TODO: problem with not visiting link(website)
 // TODO: add tests
 
