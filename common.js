@@ -183,11 +183,8 @@ bot.on('text', msg => {
   botSendMsg(`${commands.start.commandName}`, `${commands.start.msgText}
   ${commands.how.commandName} - ${commands.how.commandText}
   ${commands.link.commandName} - ${commands.link.commandText}
-  ${commands.start.commandName} - ${commands.start.commandText}
-`);
-
+  ${commands.start.commandName} - ${commands.start.commandText}`);
 });
-
 
 // TODO: Time displayed in message should be locally
 // TODO: Fix '/link' command. It should send curently watching link

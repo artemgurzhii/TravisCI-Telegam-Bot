@@ -1,13 +1,17 @@
 {
   "name": "travis-telegram-bot",
   "version": "0.0.1",
-  "author": "Artem Guzhii <artem.guzhii@gmail.com>",
+  "author": {
+    "name": "Artem Gurzhii",
+    "email": "artem.gurzhii@gmail.com",
+    "url": "https://github.com/artemgurzhii"
+  },
   "description": "Telegram bot, which will notify you each time, when your travis ci build is done",
   "main": "index.js",
   "homepage": "https://github.com/artemgurzhii/TravisCI-Telegam-Bot",
   "scripts": {
-    "start": "babel common.js --out-file index.js && node index",
-    "work": "node index",
+    "build": "babel common.js --out-file index.js",
+    "serve": "nodemon index.js",
     "test": "mocha --compilers js:babel-core/register"
   },
   "bugs": {
@@ -17,6 +21,18 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/artemgurzhii/TravisCI-Telegam-Bot"
+  },
+  "devDependencies": {
+    "babel": "^6.5.2",
+    "babel-cli": "^6.10.1",
+    "babel-preset-es2015": "^6.9.0",
+    "chai": "^3.5.0",
+    "mocha": "^2.5.3"
+  },
+  "dependencies": {
+    "express": "^4.14.0",
+    "node-telegram-bot-api": "^0.21.1",
+    "nodemon": "^1.10.2"
   },
   "engines": {
     "node": ">=0.10.1"
@@ -32,16 +48,5 @@
   "files": [
     "index.js",
     "common.js"
-  ],
-  "devDependencies": {
-    "babel": "^6.5.2",
-    "babel-cli": "^6.10.1",
-    "babel-preset-es2015": "^6.9.0",
-    "chai": "^3.5.0",
-    "mocha": "^2.5.3"
-  },
-  "dependencies": {
-    "express": "^4.14.0",
-    "node-telegram-bot-api": "^0.21.1"
-  }
+  ]
 }
