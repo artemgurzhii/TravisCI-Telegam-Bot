@@ -1,28 +1,10 @@
-import TelegramBot from 'node-telegram-bot-api';                // importing telegram bot node api
+// Main imports
+import telegram from 'node-telegram-bot-api';                   // importing telegram bot node api
 import https from 'https';                                      // importing https to make requests to travis json user data
-import express from 'express';
-import { version as packageInfo } from './package.json';
+
+// Telegram bot initialization
 const token = '227706347:AAF-Iq5fV8L4JYdk3g5wcU-z1eK1dd4sKa0';  // authorization token
-const travis = 'https://travis-ci.org';                         // using for getting json data and slicing strings
-const port = 8000;
-let bot = new TelegramBot(token, {polling: true});              // initializing new bot
-
-// keyboard options, it will appear only once whent it's required
-const opts = {
-  reply_markup: {
-    'keyboard': [
-      ['Yes'],
-      ['No']
-    ],
-    one_time_keyboard: true
-  }
-};
-
-// Creating express app
-let app = express();
-
-// dev server
-app.get('/', (req, res) => res.json({ version: packageInfo }));
+let bot = new telegram(token, {polling: true});                 // initializing new bot
 
 // main function to execute when getting message fom user
 bot.on('text', msg => {
@@ -64,17 +46,14 @@ bot.on('text', msg => {
   let slicedLink;  // using this variables for slicing user msg link
 
   // Function to send Message to user
-  // It takes two arguments, bot command(text), and bot response(response)
-  // If msgText match text then send msg with response parameter
-  const botSendMsg = (text, response) => {
-    return msgText === text ? bot.sendMessage(chatID, response) : false;
-  };
+  // It takes bot command and response as argumnets
+  const botSendMsg = (text, response) => msgText === text ? bot.sendMessage(chatID, response) : false;
 
   // Function for getting JSON data file for user repository
   // This function will slice user msg if there any spaces, and other
-  const getTravisData = () => {
-    if (msgText.indexOf(' ') > -1) {
-      if (msgText.indexOf('https') > -1) {
+  function getTravisData() {
+    if (msgText.includes(' ')) {
+      if (msgText.includes('https')) {
         slicing = msgText.slice(msgText.indexOf('https'), msgText.indexOf(' ', msgText.lastIndexOf('/')));
         slicedLink = slicing.replace(/\s/g, '');
       } else {
@@ -101,7 +80,7 @@ bot.on('text', msg => {
 
     // Function to make http request to users travis api json file
     // to get current build info
-    let request = https.request(options, response => {
+    const request = https.request(options, response => {
       let str = '';
 
       response.on('data', data => {
@@ -131,7 +110,7 @@ bot.on('text', msg => {
   // Your build completed successfully.
   // Build number was 19444.
   // Your build started at 09:56:47 and finished at 10:05:39
-  let httpIntervalRequest = () => {
+  function httpIntervalRequest() {
     setInterval(() => {                    // creating setInterval to make http request each 7 seconds
       https.request(options, response => { // defining options
         let str = '';                      // creating string where all json will be stored
@@ -165,7 +144,7 @@ bot.on('text', msg => {
   };
 
   // Check if user send Travis Repository link
-  const checkLink = msgText.indexOf(travis) > -1 || msgText.indexOf(travis.slice(8)) > -1;
+  const checkLink = msgText.includes('https://travis-ci.org') || msgText.includes('https://travis-ci.org'.slice(8));
   if (checkLink) {
     getTravisData();
     httpIntervalRequest();
@@ -192,4 +171,4 @@ bot.on('text', msg => {
 // TODO: problem with not visiting link(website)
 // TODO: add tests
 
-app.listen(port, () => console.log(`Server running on http://0.0.0.0:${port}`));
+https.createServer(bot).listen(8000, () => console.log('Server running on http://0.0.0.0:8000'));
