@@ -1,6 +1,6 @@
-// Main imports
-import telegram from 'node-telegram-bot-api';                   // importing telegram bot node api
-import https from 'https';                                      // importing https to make requests to travis json user data
+// Requiing modules
+import telegram from 'node-telegram-bot-api'; // telegram bot node api
+import https from 'https';                    // make requests to travis json user data
 
 // Telegram bot initialization
 const token = '227706347:AAF-Iq5fV8L4JYdk3g5wcU-z1eK1dd4sKa0'; // authorization token
@@ -25,9 +25,14 @@ bot.on('text', msg => {
       commandText: 'get main description of what this bot can do',
       msgText: 'Hi, I\'m @TravisCI_Telegam_Bot. Just send me link to Travis CI repository and I will notify you each time when your build is done.'
     },
+    stop: {
+      commandName: '/stop',
+      commandText: 'stops watching for current repository',
+      msgText: `Ok, since now I'm stoping watching for changes in ${slicedLink}.`
+    },
     messages: {
-      invalidLink: 'It\'s look like you send invalid link. Please send valid link.',
-      validLink: 'Ok, since now I will watch for changes in'
+      invalidLink: "It's look like you send invalid link. Please send valid link.",
+      validLink: `Ok, since now I will watch for changes in ${slicedLink}.`
     }
   };
 
@@ -47,7 +52,7 @@ bot.on('text', msg => {
 
   // Function to send Message to user
   // It takes bot command and response as argumnets
-  const botSendMsg = (text, response) => msgText === text ? bot.sendMessage(chatID, response) : false;
+  const send_message_by_bot = (text, response) => msgText === text ? bot.sendMessage(chatID, response) : false;
 
   // Function for getting JSON data file for user repository
   // This function will slice user msg if there any spaces, and other
@@ -91,9 +96,9 @@ bot.on('text', msg => {
         prevBuild = parsed.last_build_number; // ssigning previous build number to prevBuild
         currBuild = prevBuild;                // assign it to prevBuild
         if (parsed.file) {                    // parsed.file is shown if reposotiry where request where made doesn't exist
-          bot.sendMessage(chatID, `${commands.messages.invalidLink}`);
+          bot.sendMessage(chatID, commands.messages.invalidLink);
         } else {
-          bot.sendMessage(chatID, `${commands.messages.validLink} ${slicedLink}`);
+          bot.sendMessage(chatID, commands.messages.validLink);
         }
       });
     });
@@ -156,9 +161,10 @@ bot.on('text', msg => {
     linkMessage = 'Hi, you have no watched links. Send me your link and I will start watching for you changes and will notify you each time when your build is done.';
   }
 
-  botSendMsg(`${commands.how.commandName}`, `${commands.how.msgText}`);
-  botSendMsg(`${commands.link.commandName}`, `${commands.link.msgText}`);
-  botSendMsg(`${commands.start.commandName}`, `${commands.start.msgText}
+  send_message_by_bot(`${commands.how.commandName}`, `${commands.how.msgText}`);
+  send_message_by_bot(`${commands.how.commandName}`, `${commands.how.msgText}`);
+  send_message_by_bot(`${commands.link.commandName}`, `${commands.link.msgText}`);
+  send_message_by_bot(`${commands.start.commandName}`, `${commands.start.msgText}
   ${commands.how.commandName} - ${commands.how.commandText}
   ${commands.link.commandName} - ${commands.link.commandText}
   ${commands.start.commandName} - ${commands.start.commandText}`);
