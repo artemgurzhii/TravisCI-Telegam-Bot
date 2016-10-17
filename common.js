@@ -136,8 +136,9 @@ bot.on('text', msg => {
 
             bot.sendMessage(chatID, `Hi, your build at ${userRepo} repository just has ended. \nYour build ${buildText}. \nBuild number was ${buildNumber}. \nYour build started at ${buildStarted} and finished at ${buildFinished}`);
 
-            currBuild = parsed.last_build_number;   // reassign new variables
-            prevBuild = parsed.last_build_number;   // reassign new variables
+            // reassigning to a new variables
+            currBuild = parsed.last_build_number;
+            prevBuild = parsed.last_build_number;
 
           } else if (!parsed.last_build_finished_at) {  // if user send link during build
             prevBuild = parsed.last_build_number - 1;   // assign prevBuild number to currBuildNumber - 1
@@ -173,6 +174,5 @@ bot.on('text', msg => {
 // TODO: Fix '/link' command. It should send curently watching link
 // TODO: problem with not visiting link(website)
 // TODO: add tests
-// TODO: add '/stop' command
 
 https.createServer(bot).listen(8000, () => console.log('Server running on http://0.0.0.0:8000'));
