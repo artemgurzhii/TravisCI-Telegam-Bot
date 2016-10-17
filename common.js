@@ -162,7 +162,7 @@ bot.on('text', msg => {
   }
 
   send_message_by_bot(`${commands.how.commandName}`, `${commands.how.msgText}`);
-  send_message_by_bot(`${commands.how.commandName}`, `${commands.how.msgText}`);
+  send_message_by_bot(`${commands.stop.commandName}`, `${commands.stop.msgText}`);
   send_message_by_bot(`${commands.link.commandName}`, `${commands.link.msgText}`);
   send_message_by_bot(`${commands.start.commandName}`, `${commands.start.msgText}
   ${commands.how.commandName} - ${commands.how.commandText}
