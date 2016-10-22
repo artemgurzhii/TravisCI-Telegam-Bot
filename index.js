@@ -55,11 +55,12 @@ var startedAt=parsed.last_build_started_at; // when build was started
 var finishedAt=parsed.last_build_finished_at; // when build was ended
 var buildStarted=startedAt.slice(startedAt.indexOf('T')+1,startedAt.length-1); // getting pure date
 var buildFinished=finishedAt.slice(finishedAt.indexOf('T')+1,finishedAt.length-1); // getting pure date
-bot.sendMessage(chatID,'Hi, your build at '+userRepo+' repository just has ended. \nYour build '+buildText+'. \nBuild number was '+buildNumber+'. \nYour build started at '+buildStarted+' and finished at '+buildFinished+'. Link to build: '+slicedLink+'/builds'+buildID); // reassigning to a new variables
+bot.sendMessage(chatID,'Hi, your build at '+userRepo+' repository just has ended. \nYour build '+buildText+'. \nBuild number was '+buildNumber+'. \nYour build started at '+buildStarted+' and finished at '+buildFinished+'. Link to build: '+slicedLink+'/builds/'+buildID); // reassigning to a new variables
 currBuild=parsed.last_build_number;prevBuild=parsed.last_build_number;}else if(!parsed.last_build_finished_at){ // if user send link during build
 prevBuild=parsed.last_build_number-1; // assign prevBuild number to currBuildNumber - 1
 }});}).end();},7000);}; // Check if user send Travis Repository link
 var checkLink=msgText.includes('https://travis-ci.org')||msgText.includes('https://travis-ci.org'.slice(8));if(checkLink){getTravisData();httpIntervalRequest();};if(slicedLink){linkMessage='Hi, your link is '+slicedLink;slicedLink=slicedLink;}else {linkMessage='Hi, you have no watched links. Send me your link and I will start watching for you changes and will notify you each time when your build is done.';}send_message_by_bot(''+commands.how.commandName,''+commands.how.msgText);send_message_by_bot(''+commands.stop.commandName,''+commands.stop.msgText);send_message_by_bot(''+commands.link.commandName,''+commands.link.msgText);send_message_by_bot(''+commands.start.commandName,commands.start.msgText+'\n  '+commands.how.commandName+' - '+commands.how.commandText+'\n  '+commands.link.commandName+' - '+commands.link.commandText+'\n  '+commands.start.commandName+' - '+commands.start.commandText);}); // TODO: Fix '/link' command. It should send curently watching link
-// TODO: problem with not visiting link(website)
-// TODO: add tests
+// TODO: Problem with not visiting link(website)
+// TODO: Fix user sended link
+// TODO: Add tests
 _https2.default.createServer(bot).listen(8000,function(){return console.log('Server running on http://0.0.0.0:8000');});
