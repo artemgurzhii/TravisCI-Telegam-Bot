@@ -173,7 +173,8 @@ bot.on('text', msg => {
 });
 
 // TODO: Fix '/link' command. It should send curently watching link
-// TODO: problem with not visiting link(website)
-// TODO: add tests
+// TODO: Problem with not visiting link(website)
+// TODO: Fix user sended link
+// TODO: Add tests
 
 https.createServer(bot).listen(8000, () => console.log('Server running on http://0.0.0.0:8000'));
