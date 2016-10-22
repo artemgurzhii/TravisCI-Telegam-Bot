@@ -5,7 +5,7 @@ var token='227706347:AAF-Iq5fV8L4JYdk3g5wcU-z1eK1dd4sKa0'; // authorization toke
 // telegram bot node api
 var bot=new _nodeTelegramBotApi2.default(token,{polling:true}); // initializing new bot
 // main function to execute when getting message fom user
-bot.on('text',function(msg){var commands={how:{commandName:'/how',commandText:'how does it work',msgText:'You send me your Tavis CI repository link. Example: \nhttps://travis-ci.org/twbs/bootstrap \nThen I will watch for changes and will notify you each time when your build is done. \n\nI will also include some basic information about your build. \nCurrently i can watch only one repository from each user.'},link:{commandName:'/link',commandText:'get the currently watched link',msgText:linkMessage},start:{commandName:'/start',commandText:'get main description of what this bot can do',msgText:'Hi, I\'m @TravisCI_Telegam_Bot. Just send me link to Travis CI repository and I will notify you each time when your build is done.'},stop:{commandName:'/stop',commandText:'stops watching for current repository',msgText:'Ok, since now I\'m stoping watching for changes in '+slicedLink+'.'},messages:{invalidLink:"It's look like you send invalid link. Please send valid link.",validLink:'Ok, since now I will watch for changes in '+slicedLink+'.'}};var chatID=msg.chat.id; // saving user chat id from who bot received message
+bot.on('text',function(msg){var chatID=msg.chat.id; // saving user chat id from who bot received message
 var msgText=msg.text; // getting text content from message
 // variables to declare in global scope
 var userID=void 0; // slice msg to get user ID
@@ -29,7 +29,7 @@ var request=_https2.default.request(options,function(response){var str='';respon
 prevBuild=parsed.last_build_number; // ssigning previous build number to prevBuild
 currBuild=prevBuild; // assign it to prevBuild
 if(parsed.file){ // parsed.file is shown if reposotiry where request where made doesn't exist
-bot.sendMessage(chatID,commands.messages.invalidLink);}else {bot.sendMessage(chatID,commands.messages.validLink);}});});request.end();}; // Function to make http request to users travis api json file, which will be called each 7 seconds
+bot.sendMessage(chatID,commands.messages.invalidLink);}else {bot.sendMessage(chatID,commands.messages.validLink);}});});request.end();};var commands={how:{commandName:'/how',commandText:'how does it work',msgText:'You send me your Tavis CI repository link. Example: \nhttps://travis-ci.org/twbs/bootstrap \nThen I will watch for changes and will notify you each time when your build is done. \n\nI will also include some basic information about your build. \nCurrently i can watch only one repository from each user.'},link:{commandName:'/link',commandText:'get the currently watched link',msgText:linkMessage},start:{commandName:'/start',commandText:'get main description of what this bot can do',msgText:'Hi, I\'m @TravisCI_Telegam_Bot. Just send me link to Travis CI repository and I will notify you each time when your build is done.'},stop:{commandName:'/stop',commandText:'stops watching for current repository',msgText:'Ok, since now I\'m stoping watching for changes in '+slicedLink+'.'},messages:{invalidLink:"It's look like you send invalid link. Please send valid link.",validLink:'Ok, since now I will watch for changes in '+slicedLink+'.'}}; // Function to make http request to users travis api json file, which will be called each 7 seconds
 // getting current build status and build number and storing them
 // when will making next http request it will compare current build status locally stored and in json file remotelly
 // and check if last build has ended
@@ -50,11 +50,12 @@ if(prevBuild!==currBuild&&parsed.last_build_finished_at){ // if prevBuild !== cu
 // bot.sendMessage(chatID, new Date().toLocaleString());
 var buildText=parsed.last_build_status===0?'completed successfully':'failed'; // defining if build failed or passed
 var buildNumber=parsed.last_build_number; // geting build number
+var buildID=parsed.last_build_id; // geting build id
 var startedAt=parsed.last_build_started_at; // when build was started
 var finishedAt=parsed.last_build_finished_at; // when build was ended
 var buildStarted=startedAt.slice(startedAt.indexOf('T')+1,startedAt.length-1); // getting pure date
 var buildFinished=finishedAt.slice(finishedAt.indexOf('T')+1,finishedAt.length-1); // getting pure date
-bot.sendMessage(chatID,'Hi, your build at '+userRepo+' repository just has ended. \nYour build '+buildText+'. \nBuild number was '+buildNumber+'. \nYour build started at '+buildStarted+' and finished at '+buildFinished); // reassigning to a new variables
+bot.sendMessage(chatID,'Hi, your build at '+userRepo+' repository just has ended. \nYour build '+buildText+'. \nBuild number was '+buildNumber+'. \nYour build started at '+buildStarted+' and finished at '+buildFinished+'. Link to build: '+slicedLink+'/builds'+buildID); // reassigning to a new variables
 currBuild=parsed.last_build_number;prevBuild=parsed.last_build_number;}else if(!parsed.last_build_finished_at){ // if user send link during build
 prevBuild=parsed.last_build_number-1; // assign prevBuild number to currBuildNumber - 1
 }});}).end();},7000);}; // Check if user send Travis Repository link
