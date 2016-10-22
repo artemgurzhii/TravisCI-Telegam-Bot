@@ -9,33 +9,6 @@ let bot = new telegram(token, {polling: true});                // initializing n
 // main function to execute when getting message fom user
 bot.on('text', msg => {
 
-  const commands = {
-    how: {
-      commandName: '/how',
-      commandText: 'how does it work',
-      msgText: 'You send me your Tavis CI repository link. Example: \nhttps://travis-ci.org/twbs/bootstrap \nThen I will watch for changes and will notify you each time when your build is done. \n\nI will also include some basic information about your build. \nCurrently i can watch only one repository from each user.'
-    },
-    link: {
-      commandName: '/link',
-      commandText: 'get the currently watched link',
-      msgText: linkMessage
-    },
-    start: {
-      commandName: '/start',
-      commandText: 'get main description of what this bot can do',
-      msgText: 'Hi, I\'m @TravisCI_Telegam_Bot. Just send me link to Travis CI repository and I will notify you each time when your build is done.'
-    },
-    stop: {
-      commandName: '/stop',
-      commandText: 'stops watching for current repository',
-      msgText: `Ok, since now I'm stoping watching for changes in ${slicedLink}.`
-    },
-    messages: {
-      invalidLink: "It's look like you send invalid link. Please send valid link.",
-      validLink: `Ok, since now I will watch for changes in ${slicedLink}.`
-    }
-  };
-
   let chatID = msg.chat.id; // saving user chat id from who bot received message
   let msgText = msg.text;   // getting text content from message
 
@@ -103,6 +76,33 @@ bot.on('text', msg => {
       });
     });
     request.end();
+  };
+
+  const commands = {
+    how: {
+      commandName: '/how',
+      commandText: 'how does it work',
+      msgText: 'You send me your Tavis CI repository link. Example: \nhttps://travis-ci.org/twbs/bootstrap \nThen I will watch for changes and will notify you each time when your build is done. \n\nI will also include some basic information about your build. \nCurrently i can watch only one repository from each user.'
+    },
+    link: {
+      commandName: '/link',
+      commandText: 'get the currently watched link',
+      msgText: linkMessage
+    },
+    start: {
+      commandName: '/start',
+      commandText: 'get main description of what this bot can do',
+      msgText: 'Hi, I\'m @TravisCI_Telegam_Bot. Just send me link to Travis CI repository and I will notify you each time when your build is done.'
+    },
+    stop: {
+      commandName: '/stop',
+      commandText: 'stops watching for current repository',
+      msgText: `Ok, since now I'm stoping watching for changes in ${slicedLink}.`
+    },
+    messages: {
+      invalidLink: "It's look like you send invalid link. Please send valid link.",
+      validLink: `Ok, since now I will watch for changes in ${slicedLink}.`
+    }
   };
 
   // Function to make http request to users travis api json file, which will be called each 7 seconds
