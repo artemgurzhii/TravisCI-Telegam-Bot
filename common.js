@@ -128,13 +128,14 @@ bot.on('text', msg => {
           if (prevBuild !== currBuild && parsed.last_build_finished_at) {  // if prevBuild !== currBuild and build done
             // bot.sendMessage(chatID, new Date().toLocaleString());
             let buildText = parsed.last_build_status === 0 ? 'completed successfully' : 'failed'; // defining if build failed or passed
-            let buildNumber = parsed.last_build_number;                     // geting build number
-            let startedAt = parsed.last_build_started_at;                   // when build was started
-            let finishedAt = parsed.last_build_finished_at;                 // when build was ended
+            let buildNumber = parsed.last_build_number;     // geting build number
+            let buildID = parsed.last_build_id;             // geting build id
+            let startedAt = parsed.last_build_started_at;   // when build was started
+            let finishedAt = parsed.last_build_finished_at; // when build was ended
             let buildStarted = startedAt.slice(startedAt.indexOf('T') + 1, startedAt.length - 1);     // getting pure date
             let buildFinished = finishedAt.slice(finishedAt.indexOf('T') + 1, finishedAt.length - 1); // getting pure date
 
-            bot.sendMessage(chatID, `Hi, your build at ${userRepo} repository just has ended. \nYour build ${buildText}. \nBuild number was ${buildNumber}. \nYour build started at ${buildStarted} and finished at ${buildFinished}`);
+            bot.sendMessage(chatID, `Hi, your build at ${userRepo} repository just has ended. \nYour build ${buildText}. \nBuild number was ${buildNumber}. \nYour build started at ${buildStarted} and finished at ${buildFinished}. Link to build: ${slicedLink}/builds${buildID}`);
 
             // reassigning to a new variables
             currBuild = parsed.last_build_number;
