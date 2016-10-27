@@ -1,6 +1,6 @@
-// Requiing modules
-import telegram from 'node-telegram-bot-api'; // telegram bot node api
-import https from 'https';                    // make requests to travis json user data
+// Requiring telegram node api and https modules
+import telegram from 'node-telegram-bot-api';
+import https from 'https';
 
 // Telegram bot initialization
 const token = '227706347:AAF-Iq5fV8L4JYdk3g5wcU-z1eK1dd4sKa0'; // authorization token
@@ -17,30 +17,28 @@ let linkMessage; // text message on /link command
 let slicing;     // using this variables for slicing user msg link
 let slicedLink;  // using this variables for slicing user msg link
 
-
 // main function to execute when getting message fom user
 bot.on('text', msg => {
 
   let chatID = msg.chat.id; // saving user chat id from who bot received message
   let msgText = msg.text;   // getting text content from message
 
-  // Function to send Message to user
-  // It takes bot command and response as argumnets
+  // Send response to command if user message matching 'response' argument
   const send_message_by_bot = (text, response) => msgText === text ? bot.sendMessage(chatID, response) : false;
 
-  function stringIncludes(msg, text) {
+  // Slice passed argument as string from index of text, till end of line
+  function sliceFrom(msg, text) {
     msg.slice(msg.indexOf(text), msg.indexOf(' ', msg.lastIndexOf('/')));
     slicedLink = slicing.replace(/\s/g, '');
   }
 
-  // Function for getting JSON data file for user repository
-  // This function will slice user msg if there any spaces, and other
+  // Slice user message to get correct travis.ci link
   function getTravisData() {
     if (msgText.includes(' ')) {
       if (msgText.includes('https')) {
-        stringIncludes(msgText, 'https');
+        sliceFrom(msgText, 'https');
       } else {
-        stringIncludes(msgText, 'travis');
+        sliceFrom(msgText, 'travis');
       }
     } else {
       slicedLink = msgText;
