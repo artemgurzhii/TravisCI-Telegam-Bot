@@ -4,9 +4,6 @@
 var token='227706347:AAF-Iq5fV8L4JYdk3g5wcU-z1eK1dd4sKa0'; // authorization token
 // telegram bot node api
 var bot=new _nodeTelegramBotApi2.default(token,{polling:true}); // initializing new bot
-// main function to execute when getting message fom user
-bot.on('text',function(msg){var chatID=msg.chat.id; // saving user chat id from who bot received message
-var msgText=msg.text; // getting text content from message
 // variables to declare in global scope
 var userID=void 0; // slice msg to get user ID
 var userRepo=void 0; // slice msg to get user Repository name
@@ -17,11 +14,14 @@ var currLink=void 0; // storing here name of current link
 var linkMessage=void 0; // text message on /link command
 var slicing=void 0; // using this variables for slicing user msg link
 var slicedLink=void 0; // using this variables for slicing user msg link
+// main function to execute when getting message fom user
+bot.on('text',function(msg){var chatID=msg.chat.id; // saving user chat id from who bot received message
+var msgText=msg.text; // getting text content from message
 // Function to send Message to user
 // It takes bot command and response as argumnets
-var send_message_by_bot=function send_message_by_bot(text,response){return msgText===text?bot.sendMessage(chatID,response):false;}; // Function for getting JSON data file for user repository
+var send_message_by_bot=function send_message_by_bot(text,response){return msgText===text?bot.sendMessage(chatID,response):false;};function stringIncludes(msg,text){msg.slice(msg.indexOf(text),msg.indexOf(' ',msg.lastIndexOf('/')));slicedLink=slicing.replace(/\s/g,'');} // Function for getting JSON data file for user repository
 // This function will slice user msg if there any spaces, and other
-function getTravisData(){if(msgText.includes(' ')){if(msgText.includes('https')){slicing=msgText.slice(msgText.indexOf('https'),msgText.indexOf(' ',msgText.lastIndexOf('/')));slicedLink=slicing.replace(/\s/g,'');}else {slicing=msgText.slice(msgText.indexOf('travis'),msgText.indexOf(' ',msgText.lastIndexOf('/')));slicedLink=slicing.replace(/\s/g,'');}}else {slicedLink=msgText;} // slicing msg to get user ID and repository name
+function getTravisData(){if(msgText.includes(' ')){if(msgText.includes('https')){stringIncludes(msgText,'https');}else {stringIncludes(msgText,'travis');}}else {slicedLink=msgText;} // slicing msg to get user ID and repository name
 userID=slicedLink.slice(slicedLink.lastIndexOf('org')+4,slicedLink.lastIndexOf('/'));userRepo=slicedLink.slice(slicedLink.lastIndexOf('/')); // setting options for HTTP request JSON file
 options={host:'api.travis-ci.org',path:'/repositories/'+userID+userRepo+'.json',method:'GET',headers:{'User-Agent':userID}}; // Function to make http request to users travis api json file
 // to get current build info
@@ -29,7 +29,7 @@ var request=_https2.default.request(options,function(response){var str='';respon
 prevBuild=parsed.last_build_number; // ssigning previous build number to prevBuild
 currBuild=prevBuild; // assign it to prevBuild
 if(parsed.file){ // parsed.file is shown if reposotiry where request where made doesn't exist
-bot.sendMessage(chatID,commands.messages.invalidLink);}else {bot.sendMessage(chatID,commands.messages.validLink);}});});request.end();};var commands={how:{commandName:'/how',commandText:'how does it work',msgText:'You send me your Tavis CI repository link. Example: \nhttps://travis-ci.org/twbs/bootstrap \nThen I will watch for changes and will notify you each time when your build is done. \n\nI will also include some basic information about your build. \nCurrently i can watch only one repository from each user.'},link:{commandName:'/link',commandText:'get the currently watched link',msgText:linkMessage},start:{commandName:'/start',commandText:'get main description of what this bot can do',msgText:'Hi, I\'m @TravisCI_Telegam_Bot. Just send me link to Travis CI repository and I will notify you each time when your build is done.'},stop:{commandName:'/stop',commandText:'stops watching for current repository',msgText:'Ok, since now I\'m stoping watching for changes in '+slicedLink+'.'},messages:{invalidLink:"It's look like you send invalid link. Please send valid link.",validLink:'Ok, since now I will watch for changes in '+slicedLink+'.'}}; // Function to make http request to users travis api json file, which will be called each 7 seconds
+bot.sendMessage(chatID,commands.messages.invalidLink);}else {bot.sendMessage(chatID,commands.messages.validLink);}});});request.end();};var commands={how:{commandName:'/how',commandText:'how does it work',msgText:'You send me your Tavis CI repository link. Example: \nhttps://travis-ci.org/twbs/bootstrap \nThen I will watch for changes and will notify you each time when your build is done. \n\nI will also include some basic information about your build. \nCurrently i can watch only one repository from each user.'},link:{commandName:'/link',commandText:'get the currently watched link',msgText:linkMessage},start:{commandName:'/start',commandText:'get main description of what this bot can do',msgText:"Hi, I'm @TravisCI_Telegam_Bot. Just send me link to Travis CI repository and I will notify you each time when your build is done."},stop:{commandName:'/stop',commandText:'stops watching for current repository',msgText:"Ok, since now I'm stoping watching for changes."},messages:{invalidLink:"It's look like you send invalid link. Please send valid link.",validLink:'Ok, since now I will watch for changes.'}}; // Function to make http request to users travis api json file, which will be called each 7 seconds
 // getting current build status and build number and storing them
 // when will making next http request it will compare current build status locally stored and in json file remotelly
 // and check if last build has ended
@@ -63,4 +63,4 @@ var checkLink=msgText.includes('https://travis-ci.org')||msgText.includes('https
 // TODO: Problem with not visiting link(website)
 // TODO: Fix user sended link
 // TODO: Add tests
-_https2.default.createServer(bot).listen(8000,function(){return console.log('Server running on http://0.0.0.0:8000');});
+// https.createServer(bot).listen(8000, () => console.log('Server running on http://0.0.0.0:8000'));

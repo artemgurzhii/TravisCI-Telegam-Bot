@@ -6,37 +6,41 @@ import https from 'https';                    // make requests to travis json us
 const token = '227706347:AAF-Iq5fV8L4JYdk3g5wcU-z1eK1dd4sKa0'; // authorization token
 let bot = new telegram(token, {polling: true});                // initializing new bot
 
+// variables to declare in global scope
+let userID;      // slice msg to get user ID
+let userRepo;    // slice msg to get user Repository name
+let options;     // options for http request json data
+let prevBuild;   // storing number of previous build
+let currBuild;   // storing number of current build
+let currLink;    // storing here name of current link
+let linkMessage; // text message on /link command
+let slicing;     // using this variables for slicing user msg link
+let slicedLink;  // using this variables for slicing user msg link
+
+
 // main function to execute when getting message fom user
 bot.on('text', msg => {
 
   let chatID = msg.chat.id; // saving user chat id from who bot received message
   let msgText = msg.text;   // getting text content from message
 
-  // variables to declare in global scope
-  let userID;      // slice msg to get user ID
-  let userRepo;    // slice msg to get user Repository name
-  let options;     // options for http request json data
-  let prevBuild;   // storing number of previous build
-  let currBuild;   // storing number of current build
-  let currLink;    // storing here name of current link
-  let linkMessage; // text message on /link command
-  let slicing;     // using this variables for slicing user msg link
-  let slicedLink;  // using this variables for slicing user msg link
-
   // Function to send Message to user
   // It takes bot command and response as argumnets
   const send_message_by_bot = (text, response) => msgText === text ? bot.sendMessage(chatID, response) : false;
+
+  function stringIncludes(msg, text) {
+    msg.slice(msg.indexOf(text), msg.indexOf(' ', msg.lastIndexOf('/')));
+    slicedLink = slicing.replace(/\s/g, '');
+  }
 
   // Function for getting JSON data file for user repository
   // This function will slice user msg if there any spaces, and other
   function getTravisData() {
     if (msgText.includes(' ')) {
       if (msgText.includes('https')) {
-        slicing = msgText.slice(msgText.indexOf('https'), msgText.indexOf(' ', msgText.lastIndexOf('/')));
-        slicedLink = slicing.replace(/\s/g, '');
+        stringIncludes(msgText, 'https');
       } else {
-        slicing = msgText.slice(msgText.indexOf('travis'), msgText.indexOf(' ', msgText.lastIndexOf('/')));
-        slicedLink = slicing.replace(/\s/g, '');
+        stringIncludes(msgText, 'travis');
       }
     } else {
       slicedLink = msgText;
@@ -92,16 +96,16 @@ bot.on('text', msg => {
     start: {
       commandName: '/start',
       commandText: 'get main description of what this bot can do',
-      msgText: 'Hi, I\'m @TravisCI_Telegam_Bot. Just send me link to Travis CI repository and I will notify you each time when your build is done.'
+      msgText: "Hi, I'm @TravisCI_Telegam_Bot. Just send me link to Travis CI repository and I will notify you each time when your build is done."
     },
     stop: {
       commandName: '/stop',
       commandText: 'stops watching for current repository',
-      msgText: `Ok, since now I'm stoping watching for changes in ${slicedLink}.`
+      msgText: "Ok, since now I'm stoping watching for changes."
     },
     messages: {
       invalidLink: "It's look like you send invalid link. Please send valid link.",
-      validLink: `Ok, since now I will watch for changes in ${slicedLink}.`
+      validLink: 'Ok, since now I will watch for changes.'
     }
   };
 
@@ -177,4 +181,4 @@ bot.on('text', msg => {
 // TODO: Fix user sended link
 // TODO: Add tests
 
-https.createServer(bot).listen(8000, () => console.log('Server running on http://0.0.0.0:8000'));
+// https.createServer(bot).listen(8000, () => console.log('Server running on http://0.0.0.0:8000'));
