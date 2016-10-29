@@ -11,8 +11,8 @@
   "homepage": "https://github.com/artemgurzhii/TravisCI-Telegam-Bot",
   "scripts": {
     "start": "nodemon index.js --exec babel-node",
-    "build": "babel common.js --out-file index.js",
-    "serve": "nodemon index.js"
+    "build": "babel src -d dist --presets es2015,stage-2",
+    "serve": "nodemon dist/index.js"
   },
   "bugs": {
     "url": "https://github.com/artemgurzhii/TravisCI-Telegam-Bot/issues"
