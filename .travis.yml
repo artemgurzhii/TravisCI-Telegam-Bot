@@ -6,7 +6,7 @@ node_js:
   - 5.11
 
 install:
-  - npm install babel babel-core babel-register babel-preset-es2015 mocha chai
+  - npm install babel babel-core babel-register babel-preset-es2015 mocha chai dotenv
 
 script:
   - npm run test
