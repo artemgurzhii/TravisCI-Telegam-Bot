@@ -7,12 +7,12 @@ export default class GettingData {
 
 	sliceMsg(msg) {
 		const id = msg.slice(msg.lastIndexOf("org") + 4, msg.lastIndexOf("/"));
-		const repository = msg.slice(msg.lastIndexOf("/"));
+		const repository = msg.slice(msg.lastIndexOf("/") + 1);
 
 		return {
 			id,
 			repository,
-			url: `https://api.travis-ci.org/repositories/${id}${repository}.json`
+			url: `https://api.travis-ci.org/repositories/${id}/${repository}.json`
 		};
 	}
 
@@ -39,6 +39,7 @@ export default class GettingData {
 
 				// If new build were ended
 				if (prevBuild !== currBuild && parsed.last_build_finished_at) {
+
 					// Link address
 					let link = `https://travis-ci.org/${parsed.slug}`;
 
