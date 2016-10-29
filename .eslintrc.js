@@ -1,16 +1,16 @@
 module.exports = {
-		"env": {
-			"browser": false,
-			"node": true,
-			"es6": true
-		},
-		"extends": "eslint:recommended",
-		"parserOptions": {
-			"sourceType": "module"
-		},
-		"rules": {
+	"env": {
+		"browser": false,
+		"node": true,
+		"es6": true
+	},
+	"extends": "eslint:recommended",
+	"parserOptions": {
+		"sourceType": "module"
+	},
+	"rules": {
 		"indent": [
-			2,
+			"error",
 			"tab"
 		],
 		"linebreak-style": [
