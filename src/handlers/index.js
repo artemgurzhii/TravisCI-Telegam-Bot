@@ -1,46 +1,46 @@
-import GetData from '../services/index';
+import GetData from "../services/index";
 const initialize = new GetData();
 
 let watching = true;
 
 export default class Command {
-  constructor() {}
+	constructor() {}
 
-  how(bot, message) {
-    bot.sendMessage(message.from, "You send me your Tavis CI repository link. Example: \nhttps://travis-ci.org/emberjs/ember.js \nThen I will watch for changes and will notify you each time when your build is done. \n\nI will also include some basic information about your build. \nCurrently i can watch only one repository from each user.");
-  }
+	how(bot, message) {
+		bot.sendMessage(message.from, "You send me your Tavis CI repository link. Example: \nhttps://travis-ci.org/emberjs/ember.js \nThen I will watch for changes and will notify you each time when your build is done. \n\nI will also include some basic information about your build. \nCurrently i can watch only one repository from each user.");
+	}
 
-  link(bot, message, text) {
-    bot.sendMessage(message.from, text);
-  }
+	link(bot, message, text) {
+		bot.sendMessage(message.from, text);
+	}
 
-  start(bot, message) {
-    watching = true;
-    bot.sendMessage(message.from, "Ok, since now I will watch for changes.");
-  }
+	start(bot, message) {
+		watching = true;
+		bot.sendMessage(message.from, "Ok, since now I will watch for changes.");
+	}
 
-  stop(bot, message) {
-    watching = false;
-    bot.sendMessage(message.from, "Ok, since now I'm stoping watching for changes.");
-  }
+	stop(bot, message) {
+		watching = false;
+		bot.sendMessage(message.from, "Ok, since now I'm stoping watching for changes.");
+	}
 
-  data(bot, message, url) {
+	data(bot, message, url) {
 
-    let interval = setInterval(() => {
-      let data;
-      initialize.req(url, (res, valid) => {
-        data = res;
+		let interval = setInterval(() => {
+			let data;
+			initialize.req(url, (res, valid) => {
+				data = res;
 
-        if (watching && data) {
-          if (!valid) {
-            clearInterval(interval);
-          }
-          bot.sendMessage(message.from, data);
-        }
-      });
-    }, 7000);
+				if (watching && data) {
+					if (!valid) {
+						clearInterval(interval);
+					}
+					bot.sendMessage(message.from, data);
+				}
+			});
+		}, 7000);
 
-    bot.sendMessage(message.from, "Ok, since now I will watch for changes.");
-  }
+		bot.sendMessage(message.from, "Ok, since now I will watch for changes.");
+	}
 
 }

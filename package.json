@@ -12,7 +12,8 @@
   "scripts": {
     "start": "nodemon index.js --exec babel-node",
     "build": "babel src -d dist --presets es2015,stage-2",
-    "serve": "nodemon dist/index.js"
+    "serve": "nodemon dist/index.js",
+    "link": "eslint src/**"
   },
   "bugs": {
     "url": "https://github.com/artemgurzhii/TravisCI-Telegam-Bot/issues"
@@ -34,5 +35,10 @@
     "node-telegram-bot-api": "^0.24.0",
     "nodemon": "^1.11.0",
     "pg": "^6.1.0"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "eslint": "^3.9.0",
+    "mocha": "^3.1.2"
   }
 }
