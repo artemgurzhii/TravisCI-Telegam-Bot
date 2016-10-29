@@ -13,6 +13,6 @@ export default class UserInput {
   programStop(text) { return text.match('/stop'); }
 
   // if message text matching travis-ci link
-  programValidLinkSended(text) { return text.match(/https:\/\/travis-ci\.org\/[\w\d]+\/[\w\d]+$/); }
+  programValidLinkSended(text) { return text.match(/https:\/\/travis-ci\.org\/\S+\/\S+$/); }
 
 }
