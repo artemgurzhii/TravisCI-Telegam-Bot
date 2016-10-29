@@ -1,7 +1,7 @@
 import https from 'https';
 import { describe, it } from 'mocha';
 import { expect } from 'chai';
-import Data from '../../src/services/index';
+import Data from '../../services/index';
 
 const instance = new Data();
 const url = instance.sliceMsg('https://travis-ci.org/emberjs/ember.js');

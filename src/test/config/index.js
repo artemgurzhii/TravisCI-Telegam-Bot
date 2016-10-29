@@ -1,6 +1,6 @@
 import { describe, it } from "mocha";
 import { expect } from "chai";
-import config from "../../src/config/index";
+import config from "../../config/index";
 
 
 describe('Config should get data from .env file', () => {

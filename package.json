@@ -14,7 +14,7 @@
     "build": "babel src -d dist --presets es2015,stage-2",
     "serve": "nodemon dist/index.js",
     "lint": "eslint src/**",
-		"test": "./node_modules/.bin/mocha --compilers js:babel-core/register test/**"
+		"test": "./node_modules/.bin/mocha --compilers js:babel-core/register src/test/**"
   },
   "bugs": {
     "url": "https://github.com/artemgurzhii/TravisCI-Telegam-Bot/issues"
