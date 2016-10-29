@@ -1,5 +1,8 @@
-import getContent from './promiseRequest'
 import https from 'https';
+
+let currBuild = 0;
+let prevBuild = 0;
+
 export default class GettingData {
 
   sliceMsg(msg) {
@@ -15,8 +18,6 @@ export default class GettingData {
 
   req(url, cb) {
     https.get(url, res => {
-      let currBuild;
-      let prevBuild;
       let str = '';
       res.on('data', data => {
         str += data;
@@ -24,6 +25,13 @@ export default class GettingData {
       res.on('end', () => {
         let parsed = JSON.parse(str);
         currBuild = parsed.last_build_number;
+
+        if (prevBuild === 0 && currBuild === 0) {
+          prevBuild = parsed.last_build_number;
+          currBuild = prevBuild;
+          console.log(prevBuild, currBuild);
+        }
+
         if (prevBuild !== currBuild && parsed.last_build_finished_at) {
           let link = `https://travis-ci.org/${parsed.slug}`;
           let start = parsed.last_build_started_at;

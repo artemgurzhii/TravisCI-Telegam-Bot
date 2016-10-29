@@ -32,6 +32,7 @@ export default class Command {
         data = res;
         if (watching && data) {
           bot.sendMessage(message.from, data);
+          data = '';
         }
       });
     }, 7000);
