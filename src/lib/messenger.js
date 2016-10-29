@@ -15,8 +15,9 @@ export default class Messenger {
 
   constructor() {
     if (process.env.NODE_ENV === 'production') {
-      this.bot = new TelegramBot(Config.telegram.token, { webHook: { port: Config.telegram.port, host: Config.telegram.host } });
-      this.bot.setWebHook(`${Config.telegram.externalUrl}:443/bot${Config.telegram.token}`);
+      // this.bot = new TelegramBot(Config.telegram.token, { webHook: { port: Config.telegram.port, host: Config.telegram.host } });
+      // this.bot.setWebHook(`${Config.telegram.externalUrl}:443/bot${Config.telegram.token}`);
+      this.bot = new TelegramBot(Config.telegram.token, { polling: true });
     } else {
       this.bot = new TelegramBot(Config.telegram.token, { polling: true });
     }
