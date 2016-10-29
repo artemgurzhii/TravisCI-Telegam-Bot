@@ -7,7 +7,7 @@ export default class Command {
   constructor() {}
 
   how(bot, message) {
-    bot.sendMessage(message.from, "You send me your Tavis CI repository link. Example: \nhttps://travis-ci.org/twbs/bootstrap \nThen I will watch for changes and will notify you each time when your build is done. \n\nI will also include some basic information about your build. \nCurrently i can watch only one repository from each user.");
+    bot.sendMessage(message.from, "You send me your Tavis CI repository link. Example: \nhttps://travis-ci.org/emberjs/ember.js \nThen I will watch for changes and will notify you each time when your build is done. \n\nI will also include some basic information about your build. \nCurrently i can watch only one repository from each user.");
   }
 
   link(bot, message, text) {
@@ -30,7 +30,6 @@ export default class Command {
       let data;
       initialize.req(url, res => {
         data = res;
-
         if (watching && data) {
           bot.sendMessage(message.from, data);
         }
