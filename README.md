@@ -1,3 +1,5 @@
+# It's not working properly yet
+
 ## TravisCI-Telegam-Bot
 
 Telegram bot, which will notify you each time, when your Travis CI build is done.
