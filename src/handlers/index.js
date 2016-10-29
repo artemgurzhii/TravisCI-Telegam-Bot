@@ -25,13 +25,16 @@ export default class Command {
   }
 
   data(bot, message, url) {
-    // https://travis-ci.org/twbs/bootstrap
+
     setInterval(() => {
-      let data = initialize.request(url);
-      console.log(data);
-      if (watching && data) {
-        bot.sendMessage(message.from, data);
-      }
+      let data;
+      initialize.req(url, res => {
+        data = res;
+
+        if (watching && data) {
+          bot.sendMessage(message.from, data);
+        }
+      });
     }, 7000);
 
     bot.sendMessage(message.from, "Ok, since now I will watch for changes.");

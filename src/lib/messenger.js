@@ -58,8 +58,8 @@ export default class Messenger {
     // checking if user send valid travis-ci link
     if (input.programValidLinkSended(text)) {
       link = text;
-      const url = functions.sliceMsg(text);
-      return command.data(this.bot, message, url.url);
+      const sliced = functions.sliceMsg(text);
+      return command.data(this.bot, message, sliced.url);
     }
 
     // default - send message with help

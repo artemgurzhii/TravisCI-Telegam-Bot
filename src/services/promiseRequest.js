@@ -21,6 +21,7 @@ export default function getContent(url) {
 
       // we are done, resolve promise with those joined chunks
       response.on('end', () => resolve(body.join('')));
+
     });
 
     // handle connection errors of the request
