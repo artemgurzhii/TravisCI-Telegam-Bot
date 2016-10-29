@@ -1,4 +1,6 @@
 # It's not working properly yet
+[![Build Status](https://travis-ci.org/artemgurzhii/TravisCI-Telegam-Bot.svg)](https://travis-ci.org/artemgurzhii/TravisCI-Telegam-Bot)
+[![devDependency Status](https://david-dm.org/artemgurzhii/TravisCI-Telegam-Bot.svg)](https://david-dm.org/artemgurzhii/TravisCI-Telegam-Bot)
 
 ## TravisCI-Telegam-Bot
 
