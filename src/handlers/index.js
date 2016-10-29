@@ -26,13 +26,16 @@ export default class Command {
 
   data(bot, message, url) {
 
-    setInterval(() => {
+    let interval = setInterval(() => {
       let data;
-      initialize.req(url, res => {
+      initialize.req(url, (res, valid) => {
         data = res;
+
         if (watching && data) {
+          if (!valid) {
+            clearInterval(interval);
+          }
           bot.sendMessage(message.from, data);
-          data = '';
         }
       });
     }, 7000);
