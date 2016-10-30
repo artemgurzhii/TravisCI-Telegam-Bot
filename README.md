@@ -7,15 +7,13 @@
 Telegram bot, which will notify you each time, when your Travis CI build is done.
 
 ### Usage
-To start using this bot [send him message](https://telegram.me/TravisCI_Telegam_Bot)
+To start using this bot [send the link](https://telegram.me/TravisCI_Telegam_Bot) to your Travis CI repository like https://travis-ci.org/emberjs/ember.js. After that, a bot will listen for new builds and will notify you each time when your build is done.
 
-You can type `/help` or `/how` to get more useful information about how it works.
-
-You should send the link to your Travis CI repository like https://travis-ci.org/emberjs/ember.js. After that, a bot will listen for new builds and will notify you each time when your build is done.
-
-### How it works
-When you sending your Travis CI repository link, bot making the HTTP request to get the current state of build. Then it storing number of current build and then creating a new variable with the same value. Then it making new HTTP request each 7 seconds to get current information, and then it's parsing JSON and assigning a current number of build to `currBuiltNumber`. If `currBuiltNumber` number equal `prevBuiltNumber`, then nothing has been changed. Else it's checking if a build has been done by getting a value of `last_build_finished_at`. If `last_build_finished_at` does not equal `null` then it means that new build just has been finished and it will send you a message with some basic information about your build.
-
+**Commands**
+`/how` - how to use it
+`/link` - currently wathched link
+`/start` - start watching for changes
+`/stop` - stop watching for changes
 ### Contributing
 
 1. Fork it
