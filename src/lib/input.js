@@ -1,28 +1,28 @@
 export default class UserInput {
 
-	// if message text matching "/how"
-	programHow(text) {
-		return text.match("/how");
+	// message is '/how'
+	programHow(msg) {
+		return msg.match("/how");
 	}
 
-	// if message text matching /link"
-	programLink(text) {
-		return text.match("/link");
+	// message is 'link'
+	programLink(msg) {
+		return msg.match("/link");
 	}
 
-	// if message text matching "/start"
-	programStart(text) {
-		return text.match("/start");
+	// message is "/'tart'
+	programStart(msg) {
+		return msg.match("/start");
 	}
 
-	// if message text matching "/stop"
-	programStop(text) {
-		return text.match("/stop");
+	// message is "'stop'
+	programStop(msg) {
+		return msg.match("/stop");
 	}
 
-	// if message text is valid link
-	programValidLinkSended(text) {
-		return text.match(/https:\/\/travis-ci\.org\/\S+\/\S+$/);
+	// message is valid link
+	programValidLinkSended(msg) {
+		return msg.match(/https:\/\/travis-ci\.org\/\S+\/\S+$/);
 	}
 
 }

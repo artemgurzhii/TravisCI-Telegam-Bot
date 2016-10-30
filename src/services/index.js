@@ -23,8 +23,9 @@ export default class GettingData {
 				str += data;
 			});
 			res.on("end", () => {
-				let parsed = JSON.parse(str);
+				const parsed = JSON.parse(str);
 
+				// If url request dosn't return any data
 				if (parsed.file) {
 					cb("You have send invalid link, please send valid link", false);
 				}
@@ -41,18 +42,22 @@ export default class GettingData {
 				if (prevBuild !== currBuild && parsed.last_build_finished_at) {
 
 					// Link address
-					let link = `https://travis-ci.org/${parsed.slug}`;
+					const link = `https://travis-ci.org/${parsed.slug}`;
 
-					// Message variables, build started and ended at ...
-					let start = parsed.last_build_started_at;
-					let end = parsed.last_build_finished_at;
-					let started = start.slice(start.indexOf("T") + 1, start.length - 1);
-					let ended = end.slice(end.indexOf("T") + 1, end.length - 1);
+					// Message variables, build: started, ended and etc
+					const start = parsed.last_build_started_at;
+					const end = parsed.last_build_finished_at;
+					const started = start.slice(start.indexOf("T") + 1, start.length - 1);
+					const ended = end.slice(end.indexOf("T") + 1, end.length - 1);
 
+					// Reassigning build variables
 					currBuild = parsed.last_build_number;
 					prevBuild = parsed.last_build_number;
+
+					// Callback function
 					cb(`Hi, your build at ${link} repository just has ended. \nYour build ${parsed.last_build_status === 0 ? "completed successfully" : "failed"}. \nBuild number was ${parsed.last_build_number}. \nYour build started at ${started} and finished at ${ended}. Link to build: ${link}/builds/${parsed.last_build_id}`, true);
 				} else if (!parsed.last_build_finished_at) {
+					// If build is currently running
 					prevBuild = parsed.last_build_number - 1;
 				}
 			});
