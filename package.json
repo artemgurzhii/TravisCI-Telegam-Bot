@@ -7,7 +7,7 @@
     "url": "https://github.com/artemgurzhii"
   },
   "description": "Telegram bot, which will notify you each time, when your travis ci build is done",
-  "main": "src/index.js",
+  "main": "index.js",
   "homepage": "https://github.com/artemgurzhii/TravisCI-Telegam-Bot",
   "scripts": {
     "start": "nodemon index.js --exec babel-node",
