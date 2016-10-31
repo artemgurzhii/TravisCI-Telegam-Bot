@@ -5,6 +5,11 @@ let prevBuild = 0;
 
 export default class GettingData {
 
+	/**
+	 * Function accept string as argument, and return user id, repository and url for request.
+	 *
+	 * @param {string} msg String to slice.
+	 */
 	sliceMsg(msg) {
 		const id = msg.slice(msg.lastIndexOf("org") + 4, msg.lastIndexOf("/"));
 		const repository = msg.slice(msg.lastIndexOf("/") + 1);
@@ -16,6 +21,12 @@ export default class GettingData {
 		};
 	}
 
+	/**
+	 * Make request for .json file and return data from it.
+	 *
+	 * @param {string} url URL for https request.
+	 * @param {function} cb Callback function to execute, when request is done.
+	 */
 	req(url, cb) {
 		https.get(url, res => {
 			let str = "";
@@ -57,6 +68,7 @@ export default class GettingData {
 					// Callback function
 					cb(`Hi, your build at ${link} repository just has ended. \nYour build ${parsed.last_build_status === 0 ? "completed successfully" : "failed"}. \nBuild number was ${parsed.last_build_number}. \nYour build started at ${started} and finished at ${ended}. Link to build: ${link}/builds/${parsed.last_build_id}`, true);
 				} else if (!parsed.last_build_finished_at) {
+
 					// If build is currently running
 					prevBuild = parsed.last_build_number - 1;
 				}
