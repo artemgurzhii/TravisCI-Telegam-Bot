@@ -1,0 +1,7 @@
+"use strict";Object.defineProperty(exports,"__esModule",{value:true});var _createClass=function(){function defineProperties(target,props){for(var i=0;i<props.length;i++){var descriptor=props[i];descriptor.enumerable=descriptor.enumerable||false;descriptor.configurable=true;if("value"in descriptor)descriptor.writable=true;Object.defineProperty(target,descriptor.key,descriptor);}}return function(Constructor,protoProps,staticProps){if(protoProps)defineProperties(Constructor.prototype,protoProps);if(staticProps)defineProperties(Constructor,staticProps);return Constructor;};}();function _classCallCheck(instance,Constructor){if(!(instance instanceof Constructor)){throw new TypeError("Cannot call a class as a function");}}/** Class representing a Message. */var Message=function(){/**
+   * Create a message.
+   * @param {Object} msg - Geting user message text, id and info.
+   */function Message(msg){_classCallCheck(this,Message);var _ref=[msg.from,msg.text,msg.user];this.from=_ref[0];this.text=_ref[1];this.user=_ref[2];}/**
+   * @param {Object} msg - Object representing chat with user.
+   * @return {Object} msg - From who message received, and message text.
+   */_createClass(Message,null,[{key:"mapMessage",value:function mapMessage(msg){return{from:msg.from.id,text:msg.text};}}]);return Message;}();exports.default=Message;
