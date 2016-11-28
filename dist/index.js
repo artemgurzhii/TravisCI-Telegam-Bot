@@ -1,0 +1,1 @@
+"use strict";var _messenger=require("./dist/lib/messenger");var _messenger2=_interopRequireDefault(_messenger);function _interopRequireDefault(obj){return obj&&obj.__esModule?obj:{default:obj};}var telegram=new _messenger2.default();telegram.listen();
