@@ -1,4 +1,4 @@
-import Messenger from "./src/lib/messenger";
+import Messenger from "./dist/lib/messenger";
 
 const telegram = new Messenger();
 
