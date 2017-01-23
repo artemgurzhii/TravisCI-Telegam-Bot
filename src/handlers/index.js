@@ -2,7 +2,7 @@ import Data from '../services';
 
 let watching = true;
 
-/** Class representing all commands available to user. */
+/* Class representing all commands available to user. */
 export default class Command {
 
 	constructor(bot, message) {
@@ -37,7 +37,7 @@ export default class Command {
     let request;
 		let interval = setInterval(() => {
       db.forEach(user => {
-        request = new Data(null, user.url);
+        request = new Data(null, user.json);
         request.req((res, valid) => {
 
           if (watching && res) {

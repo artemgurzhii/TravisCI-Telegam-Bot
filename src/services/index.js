@@ -30,6 +30,7 @@ export default class Data {
       let prevBuild = 0;
 			let str = '';
 			res.on('data', data => {
+        console.log(1);
 				str += data;
 			});
 			res.on('end', () => {

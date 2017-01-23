@@ -39,6 +39,22 @@ export default class Messenger {
       if (this.link === undefined) {
         return this.handling.link('You have no watched links');
       }
+      let results = [];
+      pg.connect(process.env.DATABASE_URL, (err, client, done) => {
+        if (err) throw err;
+
+        const query = client.query(
+          'SELECT url FROM TravisCITelegamBot WHERE id=($1)', [message.from]
+        );
+        query.on('row', row => {
+          results.push(row);
+        });
+        query.on('end', () => {
+          done();
+          console.log(results);
+          return this.handling.data(results);
+        });
+      });
       return this.handling.link(this.link);
 		}
 
@@ -68,12 +84,12 @@ export default class Messenger {
         if (err) throw err;
 
         client.query(
-          'INSERT INTO TravisCITelegamBot(id, url) values($1, $2) ON CONFLICT DO NOTHING',
-          [message.from, sliced.url]
+          'INSERT INTO TravisCITelegamBot(id, url, json) values($1, $2, $3) ON CONFLICT DO NOTHING',
+          [message.from, this.link, sliced.url]
         );
         client.query(
-          'UPDATE TravisCITelegamBot SET url=($1) WHERE id=($2)',
-          [sliced.url, message.from]
+          'UPDATE TravisCITelegamBot SET url=($2), json=($3) WHERE id=($1)',
+          [message.from, this.link, sliced.url]
         );
 
         const query = client.query(
