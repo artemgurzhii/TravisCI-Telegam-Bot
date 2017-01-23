@@ -34,11 +34,10 @@ export default class Command {
 
   // Make request each 7 seconds to get data.
 	data(db) {
-    // const request = new Data(null, url);
-    console.log(db);
+    let request;
 		let interval = setInterval(() => {
       db.forEach(user => {
-        const request = new Data(null, user.url);
+        request = new Data(null, user.url);
         request.req((res, valid) => {
 
           if (watching && res) {
