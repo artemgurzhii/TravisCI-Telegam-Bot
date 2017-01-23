@@ -51,7 +51,7 @@ export default class Messenger {
         });
         query.on('end', () => {
           done();
-          console.log(results);
+          // console.log(results);
           return this.handling.data(results);
         });
       });
