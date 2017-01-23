@@ -6,8 +6,6 @@ import UserInput from './input';
 import Handlers from '../handlers';
 import Data from '../services';
 
-let link;
-
 export default class Messenger {
 
 	constructor() {
@@ -15,6 +13,7 @@ export default class Messenger {
 			polling: true
 		});
     this.handling = undefined;
+    this.link = undefined;
 	}
 
 	listen() {
@@ -37,15 +36,15 @@ export default class Messenger {
 
 		// if message is '/link'
 		if (input.programLink()) {
-      if (link === undefined) {
+      if (this.link === undefined) {
         return this.handling.link('You have no watched links');
       }
-      return this.handling.link(link);
+      return this.handling.link(this.link);
 		}
 
 		// if message is '/start'
 		if (input.programStart()) {
-      if (link === undefined) {
+      if (this.link === undefined) {
         return this.handling.link('You have no watched links');
       }
 			return this.handling.start();
@@ -53,39 +52,41 @@ export default class Messenger {
 
 		// if message is '/stop'
 		if (input.programStop()) {
-      if (link === undefined) {
-        return this.handling.link("You're not watching for any changes");
+      if (this.link === undefined) {
+        return this.handling.link('You\'re not watching for any changes');
       }
 			return this.handling.stop();
 		}
 
 		// checking if user send valid travis-ci link
 		if (input.programValidLinkSended()) {
-      const results = [];
+      let results = [];
+      this.link = text;
+			const sliced = functions.sliceMsg(text);
 
       pg.connect(process.env.DATABASE_URL, (err, client, done) => {
         if (err) throw err;
+
         client.query(
-          'INSERT INTO TravisCITelegamBot(id, link) values($1, $2) ON CONFLICT DO NOTHING',
-         [message.from, message.text]
+          'INSERT INTO TravisCITelegamBot(id, url) values($1, $2) ON CONFLICT DO NOTHING',
+          [message.from, sliced.url]
+        );
+        client.query(
+          'UPDATE TravisCITelegamBot SET url=($1) WHERE id=($2)',
+          [sliced.url, message.from]
         );
 
-        const query = client.query('SELECT * FROM TravisCITelegamBot');
+        const query = client.query(
+          'SELECT * FROM TravisCITelegamBot'
+        );
         query.on('row', row => {
           results.push(row);
         });
         query.on('end', () => {
           done();
-          console.log(results);
+          return this.handling.data(results);
         });
       });
-
-			link = text;
-			const sliced = functions.sliceMsg(text);
-			return this.handling.data(sliced.url);
 		}
-
-		// default - send message with help
-		return this.handling.how();
 	}
 }

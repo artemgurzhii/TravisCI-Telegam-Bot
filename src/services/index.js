@@ -1,8 +1,5 @@
 import https from 'https';
 
-let currBuild = 0;
-let prevBuild = 0;
-
 export default class Data {
 
   constructor(msg, url = null) {
@@ -10,11 +7,7 @@ export default class Data {
     this.url = url;
   }
 
-	/**
-	 * Function accept string as argument, and return user id, repository and url for request.
-	 *
-	 * @param {string} msg String to slice.
-	 */
+  // return user id, repository and url for request from sliced message.
 	sliceMsg() {
 		const id = this.msg.slice(this.msg.lastIndexOf('org') + 4, this.msg.lastIndexOf('/'));
 		const repository = this.msg.slice(this.msg.lastIndexOf('/') + 1);
@@ -28,12 +21,13 @@ export default class Data {
 
 	/**
 	 * Make request for .json file and return data from it.
-	 *
-	 * @param {string} url URL for https request.
 	 * @param {function} cb Callback function to execute, when request is done.
 	 */
 	req(cb) {
+
 		https.get(this.url, res => {
+      let currBuild = 0;
+      let prevBuild = 0;
 			let str = '';
 			res.on('data', data => {
 				str += data;
@@ -46,15 +40,12 @@ export default class Data {
 					cb('You have send invalid link, please send valid link', false);
 				}
 
-				currBuild = parsed.last_build_number;
-
 				// If build variables wasn't set and had initiale value
 				if (prevBuild === 0 && currBuild === 0) {
-					prevBuild = parsed.last_build_number;
-					currBuild = prevBuild;
+					currBuild = prevBuild = parsed.last_build_number;
 				}
 
-				// If new build were ended
+				// If new build was ended
 				if (prevBuild !== currBuild && parsed.last_build_finished_at) {
 
 					// Link address
@@ -81,23 +72,3 @@ export default class Data {
 		}).end();
 	}
 }
-
-// import pg from 'pg';
-//
-// const conString = 'pg://admin:guest@localhost:5432/Employees';
-//
-// const client = new pg.Client(conString);
-// client.connect();
-//
-// // client.query("CREATE TABLE IF NOT EXISTS emps(firstname varchar(64), lastname varchar(64))");
-// // client.query("INSERT INTO emps(firstname, lastname) values($1, $2)", ['Ronald', 'McDonald']);
-// // client.query("INSERT INTO emps(firstname, lastname) values($1, $2)", ['Mayor', 'McCheese']);
-//
-// const query = client.query('SELECT firstname, lastname FROM emps ORDER BY lastname, firstname');
-// query.on('row', (row, result) => {
-//   result.addRow(row);
-// });
-// query.on('end', result => {
-//   console.log(JSON.stringify(result.rows, null, '    '));
-//   client.end();
-// });

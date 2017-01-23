@@ -29,25 +29,27 @@ export default class Command {
   // Respond to '/stop' command
 	stop() {
 		watching = false;
-		this.bot.sendMessage(this.message.from, 'Ok, since now Im stoping watching for changes.');
+		this.bot.sendMessage(this.message.from, 'Ok, since now I will stop watching for changes.');
 	}
 
   // Make request each 7 seconds to get data.
-	data(url) {
-    const request = new Data(null, url);
+	data(db) {
+    // const request = new Data(null, url);
+    console.log(db);
 		let interval = setInterval(() => {
-			let data;
-			request.req((res, valid) => {
-				data = res;
+      db.forEach(user => {
+        const request = new Data(null, user.url);
+        request.req((res, valid) => {
 
-				if (watching && data) {
-					if (!valid) {
-						clearInterval(interval);
-					}
-					this.bot.sendMessage(this.message.from, data);
-				}
-			});
-		}, 7000);
+          if (watching && res) {
+            if (!valid) {
+              clearInterval(interval);
+            }
+            this.bot.sendMessage(user.id, res);
+          }
+        });
+      });
+		}, 10000);
 
 		this.bot.sendMessage(this.message.from, 'Ok, since now I will watch for changes.');
 	}
