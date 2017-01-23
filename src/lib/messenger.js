@@ -1,72 +1,91 @@
-import TelegramBot from "node-telegram-bot-api";
-import Message from "./message";
-import Config from "../config";
-import UserInput from "./input";
-import Handlers from "../handlers";
-import All from "../services/index";
-
-const input = new UserInput();
-const functions = new All();
-const handling = new Handlers();
+import pg from 'pg';
+import TelegramBot from 'node-telegram-bot-api';
+import Message from './message';
+import Config from '../config';
+import UserInput from './input';
+import Handlers from '../handlers';
+import Data from '../services';
 
 let link;
 
 export default class Messenger {
 
 	constructor() {
-		if (process.env.NODE_ENV === "production") {
-			// this.bot = new TelegramBot(Config.telegram.token, { webHook: { port: Config.telegram.port, host: Config.telegram.host } });
-			// this.bot.setWebHook(`${Config.telegram.externalUrl}:443/bot${Config.telegram.token}`);
-			this.bot = new TelegramBot(Config.telegram.token, {
-				polling: true
-			});
-		} else {
-			this.bot = new TelegramBot(Config.telegram.token, {
-				polling: true
-			});
-		}
-
+		this.bot = new TelegramBot(Config.telegram.token, {
+			polling: true
+		});
+    this.handling = undefined;
 	}
 
 	listen() {
-		this.bot.on("text", this.handleText.bind(this));
+		this.bot.on('text', this.handleText.bind(this));
 		return Promise.resolve();
 	}
 
 	handleText(msg) {
-
 		// format the message
 		const message = new Message(Message.mapMessage(msg));
 		const text = message.text;
+    const functions = new Data(text);
+    const input = new UserInput(text);
+    this.handling = new Handlers(this.bot, message);
 
-		// checking if asked "/how"
-		if (input.programHow(text)) {
-			return handling.how(this.bot, message);
+		// if message is '/how'
+		if (input.programHow()) {
+			return this.handling.how();
 		}
 
-		// checking if asked "/link"
-		if (input.programLink(text)) {
-			return link ? handling.link(this.bot, message, link) : handling.link(this.bot, message, "You have no watched links");
+		// if message is '/link'
+		if (input.programLink()) {
+      if (link === undefined) {
+        return this.handling.link('You have no watched links');
+      }
+      return this.handling.link(link);
 		}
 
-		// checking if asked "/start"
-		if (input.programStart(text)) {
-			return handling.start(this.bot, message);
+		// if message is '/start'
+		if (input.programStart()) {
+      if (link === undefined) {
+        return this.handling.link('You have no watched links');
+      }
+			return this.handling.start();
 		}
 
-		// checking if asked "/stop"
-		if (input.programStop(text)) {
-			return handling.stop(this.bot, message);
+		// if message is '/stop'
+		if (input.programStop()) {
+      if (link === undefined) {
+        return this.handling.link("You're not watching for any changes");
+      }
+			return this.handling.stop();
 		}
 
 		// checking if user send valid travis-ci link
-		if (input.programValidLinkSended(text)) {
+		if (input.programValidLinkSended()) {
+      const results = [];
+
+      pg.connect(process.env.DATABASE_URL, (err, client, done) => {
+        if (err) throw err;
+        client.query(
+          'INSERT INTO TravisCITelegamBot(id, link) values($1, $2) ON CONFLICT DO NOTHING',
+         [message.from, message.text]
+        );
+
+        const query = client.query('SELECT * FROM TravisCITelegamBot');
+        query.on('row', row => {
+          results.push(row);
+        });
+        query.on('end', () => {
+          done();
+          console.log(results);
+        });
+      });
+
 			link = text;
 			const sliced = functions.sliceMsg(text);
-			return handling.data(this.bot, message, sliced.url);
+			return this.handling.data(sliced.url);
 		}
 
 		// default - send message with help
-		return handling.how(this.bot, message);
+		return this.handling.how();
 	}
 }

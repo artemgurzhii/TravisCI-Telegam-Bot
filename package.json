@@ -14,7 +14,7 @@
     "build": "babel src -d dist --presets es2015,stage-2",
     "serve": "nodemon dist/index.js",
     "lint": "eslint src/**",
-		"test": "./node_modules/.bin/mocha --compilers js:babel-core/register test/**"
+    "test": "./node_modules/.bin/mocha --compilers js:babel-core/register test/**"
   },
   "bugs": {
     "url": "https://github.com/artemgurzhii/TravisCI-Telegam-Bot/issues"
@@ -35,7 +35,7 @@
     "dotenv": "^2.0.0",
     "node-telegram-bot-api": "^0.24.0",
     "nodemon": "^1.11.0",
-    "pg": "^6.1.0"
+    "pg": "6.1.0"
   },
   "devDependencies": {
     "chai": "^3.5.0",
