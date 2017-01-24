@@ -6,7 +6,7 @@ pg.connect(process.env.DATABASE_URL, (err, client, done) => {
   client
     .query(
       'CREATE TABLE IF NOT EXISTS TravisCITelegamBot(id SERIAL PRIMARY KEY, url VARCHAR(100) not null, json VARCHAR(120) not null)'
-    , (err, result) => {
+      , (err, result) => {
     if (err) throw err;
 
     client.end(err => {

@@ -51,11 +51,9 @@ export default class Messenger {
         });
         query.on('end', () => {
           done();
-          // console.log(results);
-          return this.handling.data(results);
+          return this.handling.link(results[0].url);
         });
       });
-      return this.handling.link(this.link);
 		}
 
 		// if message is '/start'
