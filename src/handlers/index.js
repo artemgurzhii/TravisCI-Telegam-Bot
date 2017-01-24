@@ -5,6 +5,11 @@ let watching = true;
 /* Class representing all commands available to user. */
 export default class Command {
 
+  /**
+   * Used to check user message and decide how to respond.
+   * @param {Object} bot - bot object.
+   * @param {string} message - received message from the user.
+   */
 	constructor(bot, message) {
     this.bot = bot;
     this.message = message;
@@ -31,6 +36,19 @@ export default class Command {
 		watching = false;
 		this.bot.sendMessage(this.message.from, 'Ok, since now I will stop watching for changes.');
 	}
+
+  /**
+   * Respond with passed argument.
+   * @param {string} message - Message to send.
+   */
+  default(message) {
+    this.bot.sendMessage(this.message.from, message);
+  }
+
+  // Respond to all other messages
+  unknown() {
+    this.bot.sendMessage(this.message.from, 'Unknown command.');
+  }
 
   // Make request each 7 seconds to get data.
 	data(db) {

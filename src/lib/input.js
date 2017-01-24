@@ -1,32 +1,47 @@
+/** Class representing users message respond methods. */
 export default class UserInput {
 
-  constructor(msg) {
-    this.msg = msg;
+  /**
+   * Used to check user message and decide how to respond.
+   * @param {string} message - received message from the user.
+   */
+  constructor(message) {
+    this.message = message;
   }
 
-  // If message is '/how'
-	programHow() {
-		return this.msg.match('/how');
+  /**
+   * @return {boolean} If received message is '/how'.
+   */
+	isHow() {
+		return !!(this.message === '/how');
 	}
 
-  // If message is '/link'
-	programLink() {
-		return this.msg.match('/link');
+  /**
+   * @return {boolean} If received message is '/link'.
+   */
+	isLink() {
+    return !!(this.message === '/link');
 	}
 
-  // If message is '/start'
-	programStart() {
-		return this.msg.match('/start');
+  /**
+   * @return {boolean} If received message is '/start'.
+   */
+	isStart() {
+    return !!(this.message === '/start');
 	}
 
-	// If message is '/stop'
-	programStop() {
-		return this.msg.match('/stop');
+  /**
+   * @return {boolean} If received message is '/stop'.
+   */
+	isStop() {
+    return !!(this.message === '/stop');
 	}
 
-  // If user send valid Travis-CI link
-	programValidLinkSended() {
-		return this.msg.match(/https:\/\/travis-ci\.org\/\S+\/\S+$/);
+  /**
+   * @return {boolean} If received message includes valid Travis-CI link.
+   */
+	isValidLink() {
+		return !!this.message.match(/https:\/\/travis-ci\.org\/\S+\/\S+$/);
 	}
 
 }

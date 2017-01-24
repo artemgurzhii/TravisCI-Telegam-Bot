@@ -3,20 +3,20 @@ export default class Message {
 
   /**
    * Create a message.
-   * @param {Object} msg - Geting user message text, id and info.
+   * @param {Object} message - Geting user message text, id and info.
    */
-	constructor(msg) {
-		[this.from, this.text] = [msg.from, msg.text];
+	constructor(message) {
+		[this.from, this.text] = [message.from, message.text];
 	}
 
   /**
-   * @param {Object} msg - Object representing chat with user.
-   * @return {Object} msg - From who message received, and message text.
+   * @param {Object} message - Chat data with user.
+   * @return {Object} Message from who and chat id.
    */
-	static mapMessage(msg) {
+	static mapMessage(message) {
 		return {
-			from: msg.from.id,
-			text: msg.text
+			from: message.from.id,
+			text: message.text
 		};
 	}
 

@@ -12,8 +12,6 @@ export default class Messenger {
 		this.bot = new TelegramBot(Config.telegram.token, {
 			polling: true
 		});
-    this.handling = undefined;
-    this.link = undefined;
 	}
 
 	listen() {
@@ -27,17 +25,18 @@ export default class Messenger {
 		const text = message.text;
     const functions = new Data(text);
     const input = new UserInput(text);
-    this.handling = new Handlers(this.bot, message);
+    const output = new Handlers(this.bot, message);
+    let link;
 
-		// if message is '/how'
-		if (input.programHow()) {
-			return this.handling.how();
+		// '/how' message is received.
+		if (input.isHow()) {
+			return output.how();
 		}
 
-		// if message is '/link'
-		if (input.programLink()) {
-      if (this.link === undefined) {
-        return this.handling.link('You have no watched links');
+		// '/link' message is received.
+		if (input.isLink()) {
+      if (link === undefined) {
+        return output.default('You have no watched links');
       }
       let results = [];
       pg.connect(process.env.DATABASE_URL, (err, client, done) => {
@@ -51,31 +50,31 @@ export default class Messenger {
         });
         query.on('end', () => {
           done();
-          return this.handling.link(results[0].url);
+          return output.link(results[0].url);
         });
       });
 		}
 
-		// if message is '/start'
-		if (input.programStart()) {
-      if (this.link === undefined) {
-        return this.handling.link('You have no watched links');
+		// '/start' message is received.
+		if (input.isStart()) {
+      if (link === undefined) {
+        return output.default('You have no watched links');
       }
-			return this.handling.start();
+			return output.start();
 		}
 
-		// if message is '/stop'
-		if (input.programStop()) {
-      if (this.link === undefined) {
-        return this.handling.link('You\'re not watching for any changes');
+		// '/stop' message is received.
+		if (input.isStop()) {
+      if (link === undefined) {
+        return output.default('You\'re not watching for any changes');
       }
-			return this.handling.stop();
+			return output.stop();
 		}
 
 		// checking if user send valid travis-ci link
-		if (input.programValidLinkSended()) {
+		if (input.isValidLink()) {
       let results = [];
-      this.link = text;
+      link = text;
 			const sliced = functions.sliceMsg(text);
 
       pg.connect(process.env.DATABASE_URL, (err, client, done) => {
@@ -83,11 +82,11 @@ export default class Messenger {
 
         client.query(
           'INSERT INTO TravisCITelegamBot(id, url, json) values($1, $2, $3) ON CONFLICT DO NOTHING',
-          [message.from, this.link, sliced.url]
+          [message.from, link, sliced.url]
         );
         client.query(
           'UPDATE TravisCITelegamBot SET url=($2), json=($3) WHERE id=($1)',
-          [message.from, this.link, sliced.url]
+          [message.from, link, sliced.url]
         );
 
         const query = client.query(
@@ -98,9 +97,10 @@ export default class Messenger {
         });
         query.on('end', () => {
           done();
-          return this.handling.data(results);
+          return output.data(results);
         });
       });
 		}
+    return output.unknown();
 	}
 }
