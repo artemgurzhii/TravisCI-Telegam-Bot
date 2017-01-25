@@ -9,8 +9,8 @@ export default class Data {
 
   // return user id, repository and url for request from sliced message.
 	sliceMsg() {
-		const id = /\.org\/([^\s\/]+)\//.exec(this.msg)[1];
-		const repository = /.+\/([^\s\/]+)/.exec(this.msg)[1];
+		const id = /\.org\/([^\s]+)\//.exec(this.msg)[1];
+		const repository = /.+\/([^\s]+)/.exec(this.msg)[1];
 
 		return {
 			id,
