@@ -6,10 +6,10 @@ import config from '../../src/config/index';
 describe('Config should get data from .env file', () => {
 	describe('Each value should be set properly', () => {
 		it('Testing port', () => {
-			expect(config.telegram.port).to.equal('8000');
+			expect(config.telegram.port).to.not.be('undefined');
 		});
 		it('Testing host', () => {
-			expect(config.telegram.host).to.equal('0.0.0.0');
+			expect(config.telegram.host).to.not.be('undefined');
 		});
 	});
 });

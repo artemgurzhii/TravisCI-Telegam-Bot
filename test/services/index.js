@@ -3,8 +3,8 @@ import { describe, it } from 'mocha';
 import { expect } from 'chai';
 import Data from '../../src/services/index';
 
-const instance = new Data();
-const url = instance.sliceMsg('https://travis-ci.org/emberjs/ember.js');
+const instance = new Data('https://travis-ci.org/emberjs/ember.js');
+const url = instance.sliceMsg();
 
 describe('Functions should work properly', () => {
 
@@ -27,8 +27,7 @@ describe('Functions should work properly', () => {
 		it('should return json file without "file" field', done => {
 			try {
 				instance.req(url.url, res => {
-					let matching = res.startsWith('Hi, your build at https://travis-ci.org/emberjs/ember.js');
-					expect(matching).to.be.true;
+					expect(res.includes('https://travis-ci.org/emberjs/ember.js')).to.be.true;
 					done();
 				});
 			} catch (err) {

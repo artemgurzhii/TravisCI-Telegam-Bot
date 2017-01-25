@@ -3,7 +3,7 @@ import TelegramBot from 'node-telegram-bot-api';
 import Message from './message';
 import Config from '../config';
 import UserInput from './input';
-import Handlers from '../handlers';
+import Commands from '../handlers';
 import Data from '../services';
 
 export default class Messenger {
@@ -23,9 +23,8 @@ export default class Messenger {
 		// format the message
 		const message = new Message(Message.mapMessage(msg));
 		const text = message.text;
-    const functions = new Data(text);
     const input = new UserInput(text);
-    const output = new Handlers(this.bot, message);
+    const output = new Commands(this.bot, message);
     let link;
 
 		// '/how' message is received.
@@ -35,47 +34,45 @@ export default class Messenger {
 
 		// '/link' message is received.
 		if (input.isLink()) {
-      if (link === undefined) {
-        return output.default('You have no watched links');
-      }
       let results = [];
       pg.connect(process.env.DATABASE_URL, (err, client, done) => {
         if (err) throw err;
 
         const query = client.query(
-          'SELECT url FROM TravisCITelegamBot WHERE id=($1)', [message.from]
+          'SELECT * FROM TravisCITelegamBot WHERE id=($1)',
+          [message.from]
         );
         query.on('row', row => {
           results.push(row);
         });
         query.on('end', () => {
+          if (!!results[0]) {
+            output.link(results[0].url);
+          } else {
+            output.default('You have no watched links');
+          }
           done();
-          return output.link(results[0].url);
         });
       });
+      return;
 		}
 
 		// '/start' message is received.
 		if (input.isStart()) {
-      if (link === undefined) {
-        return output.default('You have no watched links');
-      }
 			return output.start();
 		}
 
 		// '/stop' message is received.
 		if (input.isStop()) {
-      if (link === undefined) {
-        return output.default('You\'re not watching for any changes');
-      }
 			return output.stop();
 		}
 
 		// checking if user send valid travis-ci link
 		if (input.isValidLink()) {
+      const functions = new Data(text);
+			const sliced = functions.sliceMsg(text);
       let results = [];
       link = text;
-			const sliced = functions.sliceMsg(text);
 
       pg.connect(process.env.DATABASE_URL, (err, client, done) => {
         if (err) throw err;
@@ -99,8 +96,9 @@ export default class Messenger {
           done();
           return output.data(results);
         });
-      });
+      });;
 		}
-    return output.unknown();
+
+    // return output.unknown();
 	}
 }

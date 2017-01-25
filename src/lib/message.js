@@ -3,7 +3,7 @@ export default class Message {
 
   /**
    * Create a message.
-   * @param {Object} message - Geting user message text, id and info.
+   * @param {Object} message - Get user message text and sender id.
    */
 	constructor(message) {
 		[this.from, this.text] = [message.from, message.text];
