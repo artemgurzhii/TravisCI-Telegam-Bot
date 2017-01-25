@@ -9,8 +9,8 @@ export default class Data {
 
   // return user id, repository and url for request from sliced message.
 	sliceMsg() {
-		const id = this.msg.slice(this.msg.lastIndexOf('org') + 4, this.msg.lastIndexOf('/'));
-		const repository = this.msg.slice(this.msg.lastIndexOf('/') + 1);
+		const id = /\.org\/([^\s\/]+)\//.exec(this.msg)[1];
+		const repository = /.+\/([^\s\/]+)/.exec(this.msg)[1];
 
 		return {
 			id,
@@ -51,11 +51,9 @@ export default class Data {
 					// Link address
 					const link = `https://travis-ci.org/${parsed.slug}`;
 
-					// Message variables, build: started, ended and etc
-					const start = parsed.last_build_started_at;
-					const end = parsed.last_build_finished_at;
-					const started = start.slice(start.indexOf('T') + 1, start.length - 1);
-					const ended = end.slice(end.indexOf('T') + 1, end.length - 1);
+					// Message variables, build: started, ended
+					const started = /T(.+)Z/.exec(parsed.last_build_started_at)[1];
+					const ended = /T(.+)Z/.exec(parsed.last_build_finished_at)[1];
 
 					// Reassigning build variables
 					currBuild = parsed.last_build_number;
