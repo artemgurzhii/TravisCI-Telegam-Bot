@@ -41,7 +41,7 @@ export default class UserInput {
    * @return {boolean} If received message includes valid Travis-CI link.
    */
 	isValidLink() {
-		return /https:\/\/travis-ci\.org\/\S+\/\S+$/.test(this.message.match());
+		return /https:\/\/travis-ci\.org\/\S+\/\S+$/.test(this.message);
 	}
 
 }
