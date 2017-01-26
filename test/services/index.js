@@ -50,7 +50,6 @@ describe('Functions should work properly', () => {
           request.currBuild = 1;
 					request.req((res, isWatching) => {
 						// expect(res).to.equal('You have send invalid link, please send valid link');
-            console.log(1);
 						done();
 					});
 				} catch (err) {

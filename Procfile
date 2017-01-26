@@ -1,1 +1,1 @@
-worker: nf start
+worker: npm run start
