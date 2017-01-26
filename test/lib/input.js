@@ -4,14 +4,14 @@ import UserInput from '../../src/lib/input';
 
 describe('Respond message is depends on received message', () => {
 
-  describe('/how', () => {
-		it("'/how' message is received", () => {
-      const input = new UserInput('/how');
-			expect(input.isHow()).to.equal(true);
+  describe('/help', () => {
+		it("'/help' message is received", () => {
+      const input = new UserInput('/help');
+			expect(input.isHelp()).to.equal(true);
 		});
-		it("'random/how' message is received", () => {
-      const input = new UserInput('random/how');
-			expect(input.isHow()).to.equal(false);
+		it("'random/help' message is received", () => {
+      const input = new UserInput('random/help');
+			expect(input.isHelp()).to.equal(false);
 		});
 	});
 
@@ -26,20 +26,20 @@ describe('Respond message is depends on received message', () => {
 		});
 	});
 
-  describe('/start', () => {
-		it("'/start' message is received", () => {
-      const input = new UserInput('/start');
+  describe('/start_watching', () => {
+		it("'/start_watching' message is received", () => {
+      const input = new UserInput('/start_watching');
 			expect(input.isStart()).to.equal(true);
 		});
-		it("'random/start' message is received", () => {
-      const input = new UserInput('random/start');
+		it("'random/start_watching' message is received", () => {
+      const input = new UserInput('random/start_watching');
 			expect(input.isStart()).to.equal(false);
 		});
 	});
 
-  describe('/stop', () => {
-		it("'/stop' message is received", () => {
-      const input = new UserInput('/stop');
+  describe('/stop_watching', () => {
+		it("'/stop_watching' message is received", () => {
+      const input = new UserInput('/stop_watching');
 			expect(input.isStop()).to.equal(true);
 		});
 		it("'random/stop' message is received", () => {
@@ -49,13 +49,17 @@ describe('Respond message is depends on received message', () => {
 	});
 
   describe('TravisCI link', () => {
-		it("'https://travis-ci.org/emberjs/ember.js' message is received", () => {
-      const input = new UserInput('https://travis-ci.org/emberjs/ember.js');
+		it("'https://travis-ci.org/hello/world' message is received", () => {
+      const input = new UserInput('https://travis-ci.org/hello/world');
 			expect(input.isValidLink()).to.equal(true);
 		});
-		it("'travis-ci.org/emberjs/ember.js' message is received", () => {
-      const input = new UserInput('travis-ci.org/emberjs/ember.js');
+		it("'travis-ci.org/hello/world' message is received", () => {
+      const input = new UserInput('travis-ci.org/hello/world');
 			expect(input.isValidLink()).to.equal(false);
+		});
+    it("'https://travis-ci.org/hello/world' message is received", () => {
+      const input = new UserInput('https://travis-ci.org/hello/world/rand');
+			expect(input.isValidLink()).to.equal(true);
 		});
 	});
 

@@ -1,38 +1,66 @@
 import pg from 'pg';
 import TelegramBot from 'node-telegram-bot-api';
 import Message from './message';
-import Config from '../config';
 import UserInput from './input';
 import Commands from '../handlers';
 import Data from '../services';
 
+/**
+ * Initialize bot.
+ * @class
+ * @classdesc Listen and respond to received messages.
+ */
 export default class Messenger {
 
+  /**
+   * Set this.bot to new TelegramBot().
+   */
 	constructor() {
-		this.bot = new TelegramBot(Config.telegram.token, {
+		this.bot = new TelegramBot(process.env.TELEGRAM_TOKEN, {
 			polling: true
 		});
 	}
 
+  /**
+   * Listen for messages and fire response function on new message.
+   */
 	listen() {
 		this.bot.on('text', this.handleText.bind(this));
 		return Promise.resolve();
 	}
 
+   /**
+    * Fired when message is received.
+    * @param {Object} msg - Object containing info about sender(message text and user id).
+    * @return {Function} Return function call depending on the received messag.
+    */
 	handleText(msg) {
-		// format the message
+    /**
+     * Format the message.
+     * Getting message sender and user id stored in message variable.
+     * Initializing input(received message) and output(message to send, depends on input).
+    */
 		const message = new Message(Message.mapMessage(msg));
 		const text = message.text;
     const input = new UserInput(text);
     const output = new Commands(this.bot, message);
     let link;
 
-		// '/how' message is received.
-		if (input.isHow()) {
-			return output.how();
+    // '/start' message is received.
+		if (input.start()) {
+			return output.start();
 		}
 
-		// '/link' message is received.
+		// '/how' message is received.
+		if (input.isHelp()) {
+			return output.help();
+		}
+
+    /**
+     * If '/link' message is received.
+     * Send link if it exist in db, else send message, that no links are being watched.
+     * @return {undefined} Send message to user.
+     */
 		if (input.isLink()) {
       let results = [];
       pg.connect(process.env.DATABASE_URL, (err, client, done) => {
@@ -55,19 +83,28 @@ export default class Messenger {
         });
       });
       return;
-		}
+    }
 
-		// '/start' message is received.
+    /**
+     * If '/start_watching' message is received.
+     * @return {Promise} Send message to user.
+     */
 		if (input.isStart()) {
-			return output.start();
+			return output.startWatching();
 		}
 
-		// '/stop' message is received.
+    /**
+     * If '/stop_watching' message is received.
+     * @return {Promise} Send message to user.
+     */
 		if (input.isStop()) {
-			return output.stop();
+			return output.stopWatching();
 		}
 
-		// checking if user send valid travis-ci link
+    /**
+     * Checking if user send valid travis-ci link
+     * @return {Promise} Send message to user.
+     */
 		if (input.isValidLink()) {
       const functions = new Data(text);
 			const sliced = functions.sliceMsg(text);
@@ -97,8 +134,9 @@ export default class Messenger {
           return output.data(results);
         });
       });;
-		}
-
-    // return output.unknown();
+		} else {
+      // If unknown message/command was received
+      return output.unknown();
+    }
 	}
 }

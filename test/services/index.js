@@ -1,12 +1,12 @@
-import https from 'https';
 import { describe, it } from 'mocha';
 import { expect } from 'chai';
 import Data from '../../src/services/index';
 
-const instance = new Data('https://travis-ci.org/emberjs/ember.js');
-const url = instance.sliceMsg();
-
 describe('Functions should work properly', () => {
+	const request = new Data(
+		'https://travis-ci.org/emberjs/ember.js'
+	);
+	const url = request.sliceMsg();
 
 	// Testing 'sliceMsg' function
 	describe('sliceMsg function should correctly slice string and return data', () => {
@@ -22,17 +22,41 @@ describe('Functions should work properly', () => {
 		});
 	});
 
-	// Testing 'req' function
-	describe('testing https request function', () => {
-		it('should return json file without "file" field', done => {
-			try {
-				instance.req(url.url, res => {
-					expect(res.includes('https://travis-ci.org/emberjs/ember.js')).to.be.true;
-					done();
-				});
-			} catch (err) {
-				done(err);
-			}
+	describe('Testing https request function', () => {
+		describe('Wrong passed url for request should return error', () => {
+			const request = new Data(
+				null,
+				'https://api.travis-ci.org/repositories/helloworld/helloworld.json'
+			);
+			it('should return error as this repository does not exist', done => {
+				try {
+					request.req((res, isWatching) => {
+						expect(res).to.equal('You have send invalid link, please send valid link');
+						expect(isWatching).to.equal(false);
+						done();
+					});
+				} catch (err) {
+					done(err);
+				}
+			});
+		});
+    describe('Correct passed url for request', () => {
+			const request = new Data(
+				null,
+				'https://api.travis-ci.org/repositories/emberjs/ember.js.json'
+			);
+			it('x', done => {
+				try {
+          request.currBuild = 1;
+					request.req((res, isWatching) => {
+						// expect(res).to.equal('You have send invalid link, please send valid link');
+            console.log(1);
+						done();
+					});
+				} catch (err) {
+					done(err);
+				}
+			});
 		});
 	});
 });

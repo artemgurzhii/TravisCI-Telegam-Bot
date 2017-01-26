@@ -33,6 +33,7 @@
     "babel-preset-stage-2": "^6.18.0",
     "babel-register": "^6.18.0",
     "dotenv": "^2.0.0",
+    "foreman": "^2.0.0",
     "node-telegram-bot-api": "^0.24.0",
     "nodemon": "^1.11.0",
     "pg": "6.1.0"
