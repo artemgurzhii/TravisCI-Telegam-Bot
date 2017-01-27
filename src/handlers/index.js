@@ -1,4 +1,5 @@
 import Data from '../services';
+import pg from 'pg';
 
 /**
  * Set received message from user, bot and wathcing state.
@@ -75,7 +76,7 @@ export default class Commands {
 
   /**
    * Respond to all other messages.
-   * Unknown message where received.
+   * When unknown message is received.
    * @return {Object} Send message to user.
    */
   unknown() {
@@ -88,24 +89,31 @@ export default class Commands {
    * Make request each 10 seconds to get data.
    * Send request for each user url.
    * Argument contains users links to watch, links to json file and chat id.
+   * Is user has sent invlaid link, delete record.
    */
-	data(db) {
+  data(db, x) {
     let request;
-		let interval = setInterval(() => {
+    setInterval(() => {
       db.forEach(user => {
         request = new Data(null, user.json);
-        request.req((res, valid = true) => {
+        request.req((res, valid) => {
+          if (!valid) {
+            pg.connect(process.env.DATABASE_URL, (err, client) => {
+              if (err) throw err;
+
+              client.query(
+                'DELETE FROM TravisCITelegamBot WHERE id=($1)',
+                [user.id]
+              );
+            });
+          }
           if (this.watching && res) {
-            if (!valid) {
-              clearInterval(interval);
-            }
             this.bot.sendMessage(user.id, res);
           }
         });
       });
-		}, 1000);
+    }, 5000);
 
-		this.bot.sendMessage(this.message.from, 'Ok, since now I will watch for changes.');
-	}
-
+    this.bot.sendMessage(this.message.from, 'Ok, since now I will watch for changes.');
+  }
 }

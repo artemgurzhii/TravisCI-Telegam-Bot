@@ -44,7 +44,6 @@ export default class Messenger {
 		const text = message.text;
     const input = new UserInput(text);
     const output = new Commands(this.bot, message);
-    let link;
 
     // '/start' message is received.
 		if (input.start()) {
@@ -74,7 +73,7 @@ export default class Messenger {
           results.push(row);
         });
         query.on('end', () => {
-          if (!!results[0]) {
+          if (!!results[0] && !!results[0].url) {
             output.link(results[0].url);
           } else {
             output.default('You have no watched links');
@@ -108,32 +107,37 @@ export default class Messenger {
 		if (input.isValidLink()) {
       const functions = new Data(text);
 			const sliced = functions.sliceMsg(text);
-      let results = [];
-      link = text;
 
       pg.connect(process.env.DATABASE_URL, (err, client, done) => {
         if (err) throw err;
+        let results = [];
 
-        client.query(
-          'INSERT INTO TravisCITelegamBot(id, url, json) values($1, $2, $3) ON CONFLICT DO NOTHING',
-          [message.from, link, sliced.url]
-        );
-        client.query(
-          'UPDATE TravisCITelegamBot SET url=($2), json=($3) WHERE id=($1)',
-          [message.from, link, sliced.url]
-        );
+        client.query('SELECT url FROM TravisCITelegamBot WHERE id=($1)', [message.from], (err, result) => {
+          if (err) throw err;
+          if (result.rows[0] && result.rows[0].url) {
+            client.query(
+              'UPDATE TravisCITelegamBot SET url=($2), json=($3) WHERE id=($1)',
+              [message.from, text, sliced.url]
+            );
+          } else {
+            client.query(
+              'INSERT INTO TravisCITelegamBot(id, url, json) values($1, $2, $3)',
+              [message.from, text, sliced.url]
+            );
+          }
 
-        const query = client.query(
-          'SELECT * FROM TravisCITelegamBot'
-        );
-        query.on('row', row => {
-          results.push(row);
+          const query = client.query(
+            'SELECT * FROM TravisCITelegamBot'
+          );
+          query.on('row', row => {
+            results.push(row);
+          });
+          query.on('end', () => {
+            done();
+            return output.data(results);
+          });
         });
-        query.on('end', () => {
-          done();
-          return output.data(results);
-        });
-      });;
+      });
 		} else {
       // If unknown message/command was received
       return output.unknown();

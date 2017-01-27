@@ -43,8 +43,8 @@ export default class Data {
 			let str = '';
 
       /**
-       * When receiving data, added it to string.
-       * And parse json data on end.
+       * ON data - Add data to string.
+       * ON end - Parse json data.
        */
 			res.on('data', data => {
 				str += data;
@@ -60,16 +60,15 @@ export default class Data {
 					cb('You have send invalid link, please send valid link', false);
 				}
 
-				// If build variables wasn't set and has initiale value.
+				// If build variables has initiale value reassign them to the current build value.
 				if (this.prevBuild === 0 && this.currBuild === 0) {
 					this.currBuild = this.prevBuild = parsed.last_build_number;
 				}
 
         /**
-      	 * If new build has ended.
-      	 * Send message.
-         * Get stated and ended at time.
-         * Reassign build numbers variables.
+      	 * If new build has ended - send message.
+         * Get stated at and ended at time.
+         * Reassign build variables.
       	 */
 				if (this.prevBuild !== this.currBuild && parsed.last_build_finished_at) {
 
