@@ -3,7 +3,7 @@ import TelegramBot from 'node-telegram-bot-api';
 import Message from './message';
 import UserInput from './input';
 import Commands from '../handlers';
-import Data from '../services';
+import sliceMsg from '../utils/sliceMessage';
 
 /**
  * Initialize bot.
@@ -105,15 +105,20 @@ export default class Messenger {
      * @return {Promise} Send message to user.
      */
 		if (input.isValidLink()) {
-      const functions = new Data(text);
-			const sliced = functions.sliceMsg(text);
+			const sliced = sliceMsg(text);
 
       pg.connect(process.env.DATABASE_URL, (err, client, done) => {
         if (err) throw err;
         let results = [];
 
-        client.query('SELECT url FROM TravisCITelegamBot WHERE id=($1)', [message.from], (err, result) => {
+        client.query(
+          'SELECT url FROM TravisCITelegamBot WHERE id=($1)',
+          [message.from], (err, result) => {
           if (err) throw err;
+          /**
+           * If record already exist in db - update it with new link
+           * Else create new record
+           */
           if (result.rows[0] && result.rows[0].url) {
             client.query(
               'UPDATE TravisCITelegamBot SET url=($2), json=($3) WHERE id=($1)',
@@ -126,6 +131,9 @@ export default class Messenger {
             );
           }
 
+          /**
+           * Select all from db(Array) and pass it as argument, to send request function
+           */
           const query = client.query(
             'SELECT * FROM TravisCITelegamBot'
           );
@@ -134,7 +142,10 @@ export default class Messenger {
           });
           query.on('end', () => {
             done();
-            return output.data(results);
+            console.log(results);
+            results.forEach(user => {
+              output.data(user);
+            });
           });
         });
       });

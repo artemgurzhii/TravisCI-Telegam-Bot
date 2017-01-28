@@ -35,7 +35,8 @@
     "foreman": "^2.0.0",
     "node-telegram-bot-api": "^0.26.0",
     "nodemon": "^1.11.0",
-    "pg": "^6.1.2"
+    "pg": "^6.1.2",
+    "pg-pool": "^1.6.0"
   },
   "devDependencies": {
     "chai": "^3.5.0",
