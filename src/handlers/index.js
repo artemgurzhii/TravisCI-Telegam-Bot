@@ -1,5 +1,5 @@
 import httpRequest from '../utils/httpRequest';
-import pg from 'pg';
+import store from '../db';
 
 /**
  * Set received message from user, bot and wathcing state.
@@ -93,18 +93,15 @@ export default class Commands {
    */
   data(user) {
     httpRequest(user.json, (res, valid) => {
-      if (!valid) {
-        pg.connect(process.env.DATABASE_URL, (err, client) => {
-          if (err) throw err;
-
-          client.query(
-            'DELETE FROM TravisCITelegamBot WHERE id=($1)',
-            [user.id]
-          );
-        });
-      }
-      if (this.watching) {
-        this.bot.sendMessage(user.id, res);
+      if (res) {
+        if (!valid) {
+          store().then(value => {
+            value.delete(user.id);
+          });
+        }
+        if (this.watching) {
+          this.bot.sendMessage(user.id, res);
+        }
       }
     });
 

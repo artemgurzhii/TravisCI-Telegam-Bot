@@ -6,9 +6,5 @@ export default function sliceMsg(msg) {
   const id = /\.org\/([^\s]+)\//.exec(msg)[1];
   const repository = /.+\/([^\s]+)/.exec(msg)[1];
 
-  return {
-    id,
-    repository,
-    url: `https://api.travis-ci.org/repositories/${id}/${repository}.json`
-  };
+  return `https://api.travis-ci.org/repositories/${id}/${repository}.json`;
 }
