@@ -91,6 +91,8 @@ export default class Commands {
    * Argument contains users links to watch, links to json file and chat id.
    * Is user has sent invalid link, delete record.
    */
+   // TODO: setInterval is beeing required each time when function is called, which create multiple
+   // TODO: intervals. Need to find a way to clear previous interval or do it without it.
   data(users) {
     setInterval(() => {
       users.forEach(user => {

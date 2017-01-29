@@ -100,6 +100,7 @@ export default class Messenger {
      * Else create new record
      * Select all from db(Array) and pass it as argument, to send request function
 		 */
+     // TODO: First argument passed is database Object (problem with asynchronous)
 		if (input.isValidLink()) {
 			const json = sliceMsg(text);
 			store()

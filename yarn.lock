@@ -276,7 +276,7 @@ babel-helper-get-function-arity@^6.22.0:
     babel-runtime "^6.22.0"
     babel-types "^6.22.0"
 
-babel-helper-hoist-variables@^6.22.0:
+babel-helper-hoist-variables@^6.22.0, babel-helper-hoist-variables@^6.5.0:
   version "6.22.0"
   resolved "https://registry.yarnpkg.com/babel-helper-hoist-variables/-/babel-helper-hoist-variables-6.22.0.tgz#3eacbf731d80705845dd2e9718f600cfb9b4ba72"
   dependencies:
@@ -331,6 +331,15 @@ babel-messages@^6.22.0:
   resolved "https://registry.yarnpkg.com/babel-messages/-/babel-messages-6.22.0.tgz#36066a214f1217e4ed4164867669ecb39e3ea575"
   dependencies:
     babel-runtime "^6.22.0"
+
+babel-plugin-async-to-promises@^1.0.5:
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/babel-plugin-async-to-promises/-/babel-plugin-async-to-promises-1.0.5.tgz#cfdc47d1468ce32bee6d38862bfccd2b59daf25b"
+  dependencies:
+    babel-helper-hoist-variables "^6.5.0"
+    babel-template "^6.3.13"
+    babel-types "^6.5.2"
+    js-extend "^1.0.1"
 
 babel-plugin-check-es2015-constants@^6.22.0:
   version "6.22.0"
@@ -676,7 +685,7 @@ babel-runtime@^6.18.0, babel-runtime@^6.22.0:
     core-js "^2.4.0"
     regenerator-runtime "^0.10.0"
 
-babel-template@^6.22.0:
+babel-template@^6.22.0, babel-template@^6.3.13:
   version "6.22.0"
   resolved "https://registry.yarnpkg.com/babel-template/-/babel-template-6.22.0.tgz#403d110905a4626b317a2a1fcb8f3b73204b2edb"
   dependencies:
@@ -700,7 +709,7 @@ babel-traverse@^6.22.0, babel-traverse@^6.22.1:
     invariant "^2.2.0"
     lodash "^4.2.0"
 
-babel-types@^6.19.0, babel-types@^6.22.0:
+babel-types@^6.19.0, babel-types@^6.22.0, babel-types@^6.5.2:
   version "6.22.0"
   resolved "https://registry.yarnpkg.com/babel-types/-/babel-types-6.22.0.tgz#2a447e8d0ea25d2512409e4175479fd78cc8b1db"
   dependencies:
@@ -1687,6 +1696,10 @@ jodid25519@^1.0.0:
   resolved "https://registry.yarnpkg.com/jodid25519/-/jodid25519-1.0.2.tgz#06d4912255093419477d425633606e0e90782967"
   dependencies:
     jsbn "~0.1.0"
+
+js-extend@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/js-extend/-/js-extend-1.0.1.tgz#50551ab1ac71d4bb302e4040ebbe59033ba2b1f7"
 
 js-tokens@^3.0.0:
   version "3.0.0"

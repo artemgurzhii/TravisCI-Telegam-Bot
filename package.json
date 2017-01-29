@@ -38,6 +38,7 @@
     "pg": "^6.1.2"
   },
   "devDependencies": {
+    "babel-plugin-async-to-promises": "^1.0.5",
     "chai": "^3.5.0",
     "eslint": "^3.14.1",
     "mocha": "^3.2.0"

@@ -49,37 +49,33 @@ class DB {
     );
   }
 
-  selectURL(from) {
-    return new Promise((resolve, reject) => {
-      let results = [this];
-      const query = this.client.query(
-        'SELECT * FROM TravisCITelegamBot WHERE id=($1)',
-        [from]
-      );
-
-      query.on('row', row => {
-        results.push(row);
-      });
-      query.on('end', () => {
-        resolve(results);
-      });
+  async selectURL(from) {
+    // TODO: remove first element from array(this, which is database object)
+    let results = [this];
+    await this.client.query(
+      'SELECT * FROM TravisCITelegamBot WHERE id=($1)',
+      [from]
+    ).on('row', row => {
+      results.push(row);
     });
+    return results;
   }
 
-  selectAll() {
-    return new Promise((resolve, reject) => {
-      let results = [];
-      const query = this.client.query(
-        'SELECT * FROM TravisCITelegamBot'
-      );
-      query.on('row', row => {
-        results.push(row);
-      });
-      query.on('end', () => resolve(results));
+  async selectAll() {
+    let results = [];
+    await this.client.query(
+      'SELECT * FROM TravisCITelegamBot'
+    ).on('row', row => {
+      results.push(row);
     });
+    return results;
   }
 }
 
+
+// TODO: Move this into constructor so it will not create new connection,
+// TODO: each time when functions is called
+// TODO: Replace promise with async/await
 export default function store() {
   return new Promise((resolve, reject) => {
     pg.connect(process.env.DATABASE_URL, (err, client, done) => {
