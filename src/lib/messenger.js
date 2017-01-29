@@ -75,17 +75,21 @@ export default class Messenger {
 
 		/**
 		 * If '/start_watching' message is received.
+     * Change watching state to true.
 		 * @return {Promise} Send message to user.
 		 */
 		if (input.isStart()) {
+      store().then(database => database.watchingState(message.from, true));
 			return output.startWatching();
 		}
 
 		/**
 		 * If '/stop_watching' message is received.
+     * Change watching state to false.
 		 * @return {Promise} Send message to user.
 		 */
 		if (input.isStop()) {
+      store().then(database => database.watchingState(message.from, false));
 			return output.stopWatching();
 		}
 
@@ -109,11 +113,7 @@ export default class Messenger {
 					return url[0];
 				})
         .then(value => value.selectAll())
-        .then(users => {
-					users.forEach(user => {
-						output.data(user);
-					});
-				});
+        .then(users => output.data(users));
 		} else {
 			// If unknown message/command was received
 			return output.unknown();

@@ -23,15 +23,15 @@ class DB {
    */
   update(from, url, json) {
     this.client.query(
-      'UPDATE TravisCITelegamBot SET url=($2), json=($3) WHERE id=($1)',
-      [from, url, json]
+      'UPDATE TravisCITelegamBot SET url=($2), json=($3), watching=($4) WHERE id=($1)',
+      [from, url, json, true]
     );
   }
 
   insert(from, url, json) {
     this.client.query(
-      'INSERT INTO TravisCITelegamBot(id, url, json) values($1, $2, $3)',
-      [from, url, json]
+      'INSERT INTO TravisCITelegamBot(id, url, json, watching) values($1, $2, $3, $4)',
+      [from, url, json, true]
     );
   }
 
@@ -39,6 +39,13 @@ class DB {
     this.client.query(
       'DELETE FROM TravisCITelegamBot WHERE id=($1)',
       [id]
+    );
+  }
+
+  watchingState(from, bool) {
+    this.client.query(
+      'UPDATE TravisCITelegamBot SET watching=($2) WHERE id=($1)',
+      [from, bool]
     );
   }
 
@@ -78,7 +85,7 @@ export default function store() {
     pg.connect(process.env.DATABASE_URL, (err, client, done) => {
       if (err) throw err;
       client.query(
-        'CREATE TABLE IF NOT EXISTS TravisCITelegamBot(id SERIAL PRIMARY KEY, url VARCHAR(100), json VARCHAR(120))');
+        'CREATE TABLE IF NOT EXISTS TravisCITelegamBot(id SERIAL PRIMARY KEY, url VARCHAR(100), json VARCHAR(120), watching BOOLEAN)');
       const database = new DB(client);
       return resolve(database);
     });

@@ -91,19 +91,21 @@ export default class Commands {
    * Argument contains users links to watch, links to json file and chat id.
    * Is user has sent invalid link, delete record.
    */
-  data(user) {
-    httpRequest(user.json, (res, valid) => {
-      if (res) {
-        if (!valid) {
-          store().then(value => {
-            value.delete(user.id);
-          });
-        }
-        if (this.watching) {
-          this.bot.sendMessage(user.id, res);
-        }
-      }
-    });
+  data(users) {
+    setInterval(() => {
+      users.forEach(user => {
+        httpRequest(user.json, (res, valid) => {
+          if (!valid) {
+            store().then(value => {
+              value.delete(user.id);
+            });
+          }
+          if (user.watching) {
+            this.bot.sendMessage(user.id, res);
+          }
+        });
+      });
+    }, 5000);
 
     this.bot.sendMessage(this.message.from, 'Ok, since now I will watch for changes.');
   }
