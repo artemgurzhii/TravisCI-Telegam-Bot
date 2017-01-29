@@ -13,7 +13,7 @@ describe('httpRequest test', () => {
           expect(valid).to.equal(false);
           expect(res).to.equal('Please send valid link. Example: https://travis-ci.org/emberjs/ember.js');
         });
-        setTimeout(done, 2500);
+        setTimeout(done, 200);
       } catch (err) {
         done(err);
       }
@@ -25,7 +25,7 @@ describe('httpRequest test', () => {
         httpRequest(validURL, (res, valid) => {
           expect(valid).to.equal(true);
         });
-        setTimeout(done, 2500);
+        setTimeout(done, 200);
       } catch (err) {
         done(err);
       }
