@@ -44,9 +44,9 @@ class DB {
 
   selectURL(from) {
     return new Promise((resolve, reject) => {
-      let results = [];
+      let results = [this];
       const query = this.client.query(
-        'SELECT url FROM TravisCITelegamBot WHERE id=($1)',
+        'SELECT * FROM TravisCITelegamBot WHERE id=($1)',
         [from]
       );
 
@@ -75,7 +75,7 @@ class DB {
 
 export default function store() {
   return new Promise((resolve, reject) => {
-    pg.connect('postgres://qmcnigpnjhxgaz:094064700611b67060725305396a420972e34ca91dc820d3059d8dfd23708475@ec2-54-195-248-0.eu-west-1.compute.amazonaws.com:5432/d68kqhqk2h1qch?ssl=true', (err, client, done) => {
+    pg.connect(process.env.DATABASE_URL, (err, client, done) => {
       if (err) throw err;
       client.query(
         'CREATE TABLE IF NOT EXISTS TravisCITelegamBot(id SERIAL PRIMARY KEY, url VARCHAR(100), json VARCHAR(120))');

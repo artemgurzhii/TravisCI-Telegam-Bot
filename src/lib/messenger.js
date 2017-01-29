@@ -61,18 +61,14 @@ export default class Messenger {
 		 * @return {undefined} Send message to user.
 		 */
 		if (input.isLink()) {
-			store()
+      store()
+				.then(value => value.selectURL(message.from))
 				.then(value => {
-
-					value
-						.selectURL(message.from)
-						.then(value => {
-							if (!!value[0]) {
-								output.link(value[0].url);
-							} else {
-								output.default('You have no watched links');
-							}
-						});
+					if (!!value[1]) {
+						output.link(value[1].url);
+					} else {
+						output.default('You have no watched links');
+					}
 				});
 			return;
 		}
@@ -96,27 +92,27 @@ export default class Messenger {
 		/**
 		 * Checking if user send valid travis-ci link
 		 * @return {Promise} Send message to user.
+     * If record already exist in db - update it with new link
+     * Else create new record
+     * Select all from db(Array) and pass it as argument, to send request function
 		 */
 		if (input.isValidLink()) {
 			const json = sliceMsg(text);
 			store()
         .then(database => database.selectURL(message.from))
 				.then(url => {
-					store()
-						.then(database => {
-							if (url[0] && url[0].url) {
-								database.update(message.from, text, json);
-							} else {
-								database.insert(message.from, text, json);
-							}
-							return database;
-						})
-            .then(value => value.selectAll())
-            .then(users => {
-							users.forEach(user => {
-								output.data(user);
-							});
-						});
+					if (url[1] && url[1].url) {
+						url[0].update(message.from, text, json);
+					} else {
+						url[0].insert(message.from, text, json);
+					}
+					return url[0];
+				})
+        .then(value => value.selectAll())
+        .then(users => {
+					users.forEach(user => {
+						output.data(user);
+					});
 				});
 		} else {
 			// If unknown message/command was received
