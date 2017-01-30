@@ -42,6 +42,8 @@ export default function httpRequest(url, cb) {
        * Get stated at and ended at time.
        * Reassign build variables.
        */
+       console.log(parsed.last_build_number);
+       console.log(currBuild);
       if (parsed.last_build_number !== currBuild && parsed.last_build_finished_at) {
 
         // Link address
