@@ -56,7 +56,6 @@ describe('All commands available to user', () => {
   describe('data', () => {
     it('data', () => {
       const link = output.data(db);
-      console.log(link);
       expect(output.watching).to.equal(true);
     });
   });

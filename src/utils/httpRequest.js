@@ -42,7 +42,7 @@ export default function httpRequest(url, cb) {
        * Get stated at and ended at time.
        * Reassign build variables.
        */
-      if (prevBuild === currBuild && parsed.last_build_finished_at) {
+      if (prevBuild !== currBuild && parsed.last_build_finished_at) {
 
         // Link address
         const link = `https://travis-ci.org/${parsed.slug}`;

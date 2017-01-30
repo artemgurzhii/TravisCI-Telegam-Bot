@@ -404,6 +404,8 @@ module.exports = {
     // require use of the second argument for parseInt()
     radix: 'error',
 
+    'no-unused-vars': ['error', { 'vars': 'all', 'args': 'after-used' }],
+
     // require `await` in `async function` (note: this is a horrible rule that should never be used)
     // http://eslint.org/docs/rules/require-await
     'require-await': 'off',
