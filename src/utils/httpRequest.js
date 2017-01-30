@@ -22,6 +22,7 @@ export default function httpRequest(url, cb) {
     });
     res.on('end', () => {
       const parsed = JSON.parse(str);
+      console.log(parsed);
 
       /**
        * If url request dosn't return any data.

@@ -69,44 +69,35 @@ class DB {
    * @param {number} id - User id number.
    */
   async selectURL(id) {
-    let results = [];
+    let db = [];
     await this.client.query(
       'SELECT * FROM TravisCITelegamBot WHERE id=($1)',
       [id]
     ).on('row', row => {
-      results.push(row);
+      db.push(row);
     });
-    return results;
+    return db;
   }
 
   /**
    * Select all from database.
    */
   async selectAll() {
-    let results = [];
+    let db = [];
     await this.client.query(
       'SELECT * FROM TravisCITelegamBot'
     ).on('row', row => {
-      results.push(row);
+      db.push(row);
     });
-    return results;
+    return db;
   }
 }
 
 /**
  * Connect to database, create table and export function.
  */
-// TODO: Move this into constructor so it will not create new connection,
-// TODO: each time when functions is called
-// TODO: Replace promise with async/await
-export default function store() {
-  return new Promise((resolve, reject) => {
-    pg.connect(process.env.DATABASE_URL, (err, client, done) => {
-      if (err) throw err;
-      client.query(
-        'CREATE TABLE IF NOT EXISTS TravisCITelegamBot(id SERIAL PRIMARY KEY, url VARCHAR(100), json VARCHAR(120), watching BOOLEAN)');
-      const database = new DB(client);
-      return resolve(database);
-    });
-  });
+export default async function store() {
+  const client = await pg.connect(process.env.DATABASE_URL);
+  client.query('CREATE TABLE IF NOT EXISTS TravisCITelegamBot(id SERIAL PRIMARY KEY, url VARCHAR(100), json VARCHAR(120), watching BOOLEAN)');
+  return new DB(client);
 }

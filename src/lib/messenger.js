@@ -108,7 +108,7 @@ export default class Messenger {
 			this.store
         .then(database => Promise.all([database, database.selectURL(message.from)]))
 				.then(([database, url]) => {
-					if (url[0] && url[0].url) {
+					if (url[0]) {
 						database.update(message.from, text, json);
 					} else {
 						database.insert(message.from, text, json);

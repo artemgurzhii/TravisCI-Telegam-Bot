@@ -14,13 +14,11 @@ export default class Commands {
   /**
    * Used to check user message and decide how to respond.
    * @param {Object} bot - Bot object.
-   * @param {*} bot.sendMessage - Function to send message from bot to user.
    * @param {string} message - Received message from the user.
    */
 	constructor(bot, message) {
     this.bot = bot;
     this.message = message;
-    this.watching = true;
   }
 
   /**
@@ -54,7 +52,6 @@ export default class Commands {
    * @return {Object} Send message to user.
    */
 	startWatching() {
-		this.watching = true;
 		return this.bot.sendMessage(this.message.from, 'Ok, since now I will watch for changes.');
 	}
 
@@ -64,7 +61,6 @@ export default class Commands {
    * @return {Object} Send message to user.
    */
 	stopWatching() {
-		this.watching = false;
 		return this.bot.sendMessage(this.message.from, 'Ok, since now I will stop watching for changes.');
 	}
 
@@ -87,12 +83,12 @@ export default class Commands {
   }
 
   /**
-   * @param {Array} user - received JSON formatted array of data.
    * Respond with message that bot is watching for changes.
    * Make request each 10 seconds to get data.
    * Send request for each user url.
    * Argument contains users links to watch, links to json file and chat id.
    * Is user has sent invalid link, delete record.
+   * @param {Array} user - received JSON formatted array of data.
    */
   data(users) {
     latestUsers = users;
@@ -103,8 +99,12 @@ export default class Commands {
           httpRequest(user.json, (res, valid) => {
             if (!valid) {
               store()
-                .then(database => Promise.all([database, database.watchingState(user.id, false)]))
-                .then(([database, value]) => database.delete(user.id));
+                .then(db => Promise.all([db, db.watchingState(user.id, false)]))
+                .then(db => {
+                  db.watchingState(user.id, false);
+                  return db;
+                })
+                .then(db => db.delete(user.id));
             }
             if (user.watching) {
               this.bot.sendMessage(user.id, res);
