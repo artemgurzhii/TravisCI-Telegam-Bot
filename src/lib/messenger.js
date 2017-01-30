@@ -65,8 +65,8 @@ export default class Messenger {
       this.store
 				.then(value => value.selectURL(message.from))
 				.then(value => {
-					if (!!value[1]) {
-						output.link(value[1].url);
+					if (!!value[0]) {
+						output.link(value[0].url);
 					} else {
 						output.default('You have no watched links');
 					}

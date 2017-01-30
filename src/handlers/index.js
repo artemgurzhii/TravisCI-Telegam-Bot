@@ -102,7 +102,9 @@ export default class Commands {
         latestUsers.forEach(user => {
           httpRequest(user.json, (res, valid) => {
             if (!valid) {
-              store().then(value => value.delete(user.id));
+              store()
+                .then(database => Promise.all([database, database.watchingState(user.id, false)]))
+                .then(([database, value]) => database.delete(user.id));
             }
             if (user.watching) {
               this.bot.sendMessage(user.id, res);
