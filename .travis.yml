@@ -6,7 +6,7 @@ node_js:
   - 6.9.2
 
 install:
-  - npm install babel babel-core babel-register babel-plugin-async-to-promises babel-preset-es2015 mocha chai
+  - npm install babel babel-core babel-register babel-plugin-async-to-promises babel-preset-es2015 mocha chai pg
 
 script:
   - npm run test
