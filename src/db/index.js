@@ -68,9 +68,8 @@ class DB {
    * Select url(.json) for https request from user.
    * @param {number} id - User id number.
    */
-  // TODO: remove first element from array(this, which is database object)
   async selectURL(id) {
-    let results = [this];
+    let results = [];
     await this.client.query(
       'SELECT * FROM TravisCITelegamBot WHERE id=($1)',
       [id]

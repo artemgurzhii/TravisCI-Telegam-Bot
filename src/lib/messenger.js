@@ -19,6 +19,7 @@ export default class Messenger {
 		this.bot = new TelegramBot(process.env.TELEGRAM_TOKEN, {
 			polling: true
 		});
+    this.store = store();
 	}
 
 	/**
@@ -61,7 +62,7 @@ export default class Messenger {
 		 * @return {undefined} Send message to user.
 		 */
 		if (input.isLink()) {
-      store()
+      this.store
 				.then(value => value.selectURL(message.from))
 				.then(value => {
 					if (!!value[1]) {
@@ -79,7 +80,8 @@ export default class Messenger {
 		 * @return {Promise} Send message to user.
 		 */
 		if (input.isStart()) {
-      store().then(database => database.watchingState(message.from, true));
+      this.store
+        .then(database => database.watchingState(message.from, true));
 			return output.startWatching();
 		}
 
@@ -89,7 +91,8 @@ export default class Messenger {
 		 * @return {Promise} Send message to user.
 		 */
 		if (input.isStop()) {
-      store().then(database => database.watchingState(message.from, false));
+      this.store
+        .then(database => database.watchingState(message.from, false));
 			return output.stopWatching();
 		}
 
@@ -100,18 +103,17 @@ export default class Messenger {
      * Else create new record
      * Select all from db(Array) and pass it as argument, to send request function
 		 */
-     // TODO: First argument passed is database Object (problem with asynchronous)
 		if (input.isValidLink()) {
 			const json = sliceMsg(text);
-			store()
-        .then(database => database.selectURL(message.from))
-				.then(url => {
-					if (url[1] && url[1].url) {
-						url[0].update(message.from, text, json);
+			this.store
+        .then(database => Promise.all([database, database.selectURL(message.from)]))
+				.then(([database, url]) => {
+					if (url[0] && url[0].url) {
+						database.update(message.from, text, json);
 					} else {
-						url[0].insert(message.from, text, json);
+						database.insert(message.from, text, json);
 					}
-					return url[0];
+					return database;
 				})
         .then(value => value.selectAll())
         .then(users => output.data(users));

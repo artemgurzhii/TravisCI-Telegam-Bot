@@ -1,7 +1,7 @@
 module.exports = {
   root: true,
   parserOptions: {
-    ecmaVersion: 7,
+    ecmaVersion: 2017,
     sourceType: 'module',
   },
   env: {
@@ -110,13 +110,11 @@ module.exports = {
     'comma-spacing': ['error', { before: false, after: true }],
 
     // disallow declaration of variables that are not used in the code
-    'no-unused-vars': ['error', { vars: 'local', args: 'after-used' }],
+    'no-unused-vars': ['error', { vars: 'local', args: 'none' }],
 
     // disallow use of variables before they are defined
     'no-use-before-define': 'error',
 
-    // temporarily disabled
-    'no-unused-vars': 'off',
     'comma-dangle': 'off',
 
     // enforces no braces where they can be omitted
@@ -404,11 +402,9 @@ module.exports = {
     // require use of the second argument for parseInt()
     radix: 'error',
 
-    'no-unused-vars': ['error', { 'vars': 'all', 'args': 'after-used' }],
-
     // require `await` in `async function` (note: this is a horrible rule that should never be used)
     // http://eslint.org/docs/rules/require-await
-    'require-await': 'off',
+    'require-await': 'warn',
 
     // requires to declare all vars on top of their containing scope
     'vars-on-top': 'error',
