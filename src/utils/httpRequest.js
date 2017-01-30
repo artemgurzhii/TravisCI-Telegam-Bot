@@ -34,7 +34,8 @@ export default function httpRequest(url, cb) {
 
       // If build variables has initiale value reassign them to the current build value.
       if (prevBuild === 0 && currBuild === 0) {
-        currBuild = prevBuild = parsed.last_build_number;
+        currBuild = parsed.last_build_number;
+        prevBuild = currBuild - 1;
       }
 
       /**
