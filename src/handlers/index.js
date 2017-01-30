@@ -19,6 +19,7 @@ export default class Commands {
 	constructor(bot, message) {
     this.bot = bot;
     this.message = message;
+    this.store = store();
   }
 
   /**
@@ -98,8 +99,7 @@ export default class Commands {
         latestUsers.forEach(user => {
           httpRequest(user.json, (res, valid) => {
             if (!valid) {
-              store()
-                .then(db => Promise.all([db, db.watchingState(user.id, false)]))
+              this.store
                 .then(db => {
                   db.watchingState(user.id, false);
                   return db;
