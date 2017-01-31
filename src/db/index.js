@@ -20,11 +20,13 @@ class DB {
    * @param {number} id - User id.
    * @param {string} url - TravisCI link.
    * @param {string} json - JSON url for future https requests.
+   * @param {number} prevBuild - Previous build number.
+   * @param {number} currBuild - Current build number.
    */
-  update(id, url, json) {
+  update(id, url, json, prevBuild, currBuild) {
     this.client.query(
-      'UPDATE TravisCITelegamBot SET url=($2), json=($3), watching=($4) WHERE id=($1)',
-      [id, url, json, true]
+      'UPDATE TravisCITelegamBot SET url=($2), json=($3), watching=($4), prevBuild=($5), currBuild=($6) WHERE id=($1)',
+      [id, url, json, true, prevBuild, currBuild]
     );
   }
 
@@ -33,11 +35,24 @@ class DB {
    * @param {number} id - User id.
    * @param {string} url - TravisCI link.
    * @param {string} json - JSON url for future https requests.
+   * @param {number} prevBuild - Previous build number.
+   * @param {number} currBuild - Current build number.
    */
-  insert(id, url, json) {
+  insert(id, url, json, prevBuild, currBuild) {
     this.client.query(
-      'INSERT INTO TravisCITelegamBot(id, url, json, watching) values($1, $2, $3, $4)',
-      [id, url, json, true]
+      'INSERT INTO TravisCITelegamBot(id, url, json, watching, prevBuild, currBuild) values($1, $2, $3, $4, $5, $6)',
+      [id, url, json, true, prevBuild, currBuild]
+    );
+  }
+
+  /**
+   * Update previous and last build numbers.
+   * @param {number} id - User id number.
+   */
+  updateBuild(id) {
+    this.client.query(
+      'UPDATE TravisCITelegamBot SET prevBuild=($2), currBuild=($3) WHERE id=($1)',
+      [id, prevBuild, currBuild]
     );
   }
 
@@ -71,7 +86,22 @@ class DB {
   async selectURL(id) {
     let db = [];
     await this.client.query(
-      'SELECT * FROM TravisCITelegamBot WHERE id=($1)',
+      'SELECT url FROM TravisCITelegamBot WHERE id=($1)',
+      [id]
+    ).on('row', row => {
+      db.push(row);
+    });
+    return db;
+  }
+
+  /**
+   * Select previous and last build numbers.
+   * @param {number} id - User id number.
+   */
+  async selectBuild(id) {
+    let db = [];
+    await this.client.query(
+      'SELECT prevBuild, currBuild FROM TravisCITelegamBot WHERE id=($1)',
       [id]
     ).on('row', row => {
       db.push(row);
@@ -98,6 +128,6 @@ class DB {
  */
 export default async function store() {
   const client = await pg.connect(process.env.DATABASE_URL);
-  client.query('CREATE TABLE IF NOT EXISTS TravisCITelegamBot(id SERIAL PRIMARY KEY, url VARCHAR(100), json VARCHAR(120), watching BOOLEAN)');
+  client.query('CREATE TABLE IF NOT EXISTS TravisCITelegamBot(id SERIAL PRIMARY KEY, url VARCHAR(100), json VARCHAR(120), watching BOOLEAN, prevBuild INTEGER, currBuild INTEGER)');
   return new DB(client);
 }

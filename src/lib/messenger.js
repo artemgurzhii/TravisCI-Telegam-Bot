@@ -1,9 +1,10 @@
 import TelegramBot from 'node-telegram-bot-api';
 import Message from './message';
-import UserInput from './input';
-import Commands from '../handlers';
+import Input from './input';
+import Output from './output';
 import sliceMsg from '../utils/sliceMessage';
 import store from '../db';
+import Request from '../utils/httpRequest';
 
 /**
  * Initialize bot.
@@ -43,8 +44,8 @@ export default class Messenger {
 		 */
 		const message = new Message(Message.mapMessage(msg));
 		const text = message.text;
-		const input = new UserInput(text);
-		const output = new Commands(this.bot, message);
+		const input = new Input(text);
+		const output = new Output(this.bot, message);
 
 		// '/start' message is received.
 		if (input.start()) {
@@ -80,9 +81,8 @@ export default class Messenger {
 		 * @return {Promise} Send message to user.
 		 */
 		if (input.isStart()) {
-      this.store
-        .then(database => database.watchingState(message.from, true));
-			return output.startWatching();
+      this.store.then(db => db.watchingState(message.from, true));
+			return output.changeWatchingState('start');
 		}
 
 		/**
@@ -91,9 +91,8 @@ export default class Messenger {
 		 * @return {Promise} Send message to user.
 		 */
 		if (input.isStop()) {
-      this.store
-        .then(database => database.watchingState(message.from, false));
-			return output.stopWatching();
+      this.store.then(db => db.watchingState(message.from, false));
+			return output.changeWatchingState('stop');
 		}
 
 		/**
@@ -105,18 +104,27 @@ export default class Messenger {
 		 */
 		if (input.isValidLink()) {
 			const json = sliceMsg(text);
-			this.store
-        .then(database => Promise.all([database, database.selectURL(message.from)]))
-				.then(([database, url]) => {
-					if (url[0]) {
-						database.update(message.from, text, json);
-					} else {
-						database.insert(message.from, text, json);
-					}
-					return database;
-				})
-        .then(value => value.selectAll())
-        .then(users => output.data(users));
+      (new Request())
+        .getJSON(json)
+        .then(data => {
+          const fields = [
+            message.from, text, json,
+            data.last_build_number - 1,
+            data.last_build_number
+          ];
+          this.store
+            .then(db => Promise.all([db, db.selectURL(message.from)]))
+            .then(([db, url]) => {
+              if (url[0]) {
+                db.update(...fields);
+              } else {
+                db.insert(...fields);
+              }
+              return db;
+            })
+            .then(db => db.selectAll())
+            .then(users => output.data(users));
+          });
 		} else {
 			// If unknown message/command was received
 			return output.unknown();

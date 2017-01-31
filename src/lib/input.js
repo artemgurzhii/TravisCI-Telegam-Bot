@@ -3,7 +3,7 @@
  * @class
  * @classdesc Class representing users message respond methods.
  */
-export default class UserInput {
+export default class Input {
 
   /**
    * Used to check user message and decide how to respond.

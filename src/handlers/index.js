@@ -89,7 +89,7 @@ export default class Commands {
    * Send request for each user url.
    * Argument contains users links to watch, links to json file and chat id.
    * Is user has sent invalid link, delete record.
-   * @param {Array} user - received JSON formatted array of data.
+   * @param {Array} users - received JSON formatted array of data.
    */
   data(users) {
     latestUsers = users;
