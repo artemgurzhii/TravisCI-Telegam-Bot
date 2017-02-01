@@ -1,5 +1,5 @@
-import Request from '../utils/httpRequest';
 import store from '../db';
+import helpers from '../utils/helpers';
 
 let latestUsers;
 let intervalId;
@@ -20,12 +20,69 @@ export default class Output {
     this.bot = bot;
     this.message = message;
     this.store = store();
-    this.request = new Request();
   }
 
   /**
+   * Respond to '/link' command.
+   * @param {string} url - current link, which user is watching.
+   * @return {Promise} Send message to user.
+   */
+	link(url) {
+		return this.bot.sendMessage(this.message.from, url);
+	}
+
+  /**
+   * Respond with passed argument.
+   * @param {string} message - Message to send.
+   * @return {Promise} Send message to user.
+   */
+  default(message) {
+    return this.bot.sendMessage(this.message.from, message);
+  }
+
+  /**
+   * Respond to all other messages.
+   * When unknown message is received.
+   * @return {Promise} Send message to user.
+   */
+  unknown() {
+    return this.bot.sendMessage(this.message.from, 'Unknown command.');
+  }
+
+  /**
+   * Respond to all other messages.
+   * When unknown message is received.
+   * @return {Promise} Send message to user.
+   */
+  watch(id) {
+    return this.bot.sendMessage(id, 'Ok, since now I will watch for changes.');
+  }
+
+  /**
+   * When invalid url was received.
+   * @param {number} id - USer id to whom send message.
+   * @return {Promise} Send message to user.
+   */
+  wrongLink(id) {
+    return this.bot.sendMessage(id, 'Please send valid link. Example: https://travis-ci.org/emberjs/ember.js');
+  }
+
+  /**
+   * Respond to '/{start,stop}_watching' command.
+   * Change watching state to stop/start.
+   * @param {string} state - State to which change.
+   * @return {Promise} Send message to user.
+   */
+	changeWatchingState(state) {
+		return this.bot.sendMessage(
+      this.message.from,
+      `Ok, since now I will ${state} watching for changes.`,
+    );
+	}
+
+  /**
    * Respond to '/start' command.
-   * @return {Object} Send message to user.
+   * @return {Promise} Send message to user.
    */
   start() {
     return this.bot.sendMessage(
@@ -36,10 +93,10 @@ export default class Output {
 
   /**
    * Respond to '/how' command.
-   * @return {Object} Send message to user.
+   * @return {Promise} Send message to user.
    */
-	help() {
-		return this.bot.sendMessage(
+  help() {
+    return this.bot.sendMessage(
       this.message.from,
 `You send me your Tavis CI repository link. Example:
 https://travis-ci.org/emberjs/ember.js
@@ -48,58 +105,6 @@ Then I will watch for changes and will notify you each time when your build is d
 I will also include some basic information about your build.
 Currently i can watch only one repository from each user.`
     );
-	}
-
-  /**
-   * Respond to '/link' command.
-   * @param {string} url - current link, which user is watching.
-   * @return {Object} Send message to user.
-   */
-	link(url) {
-		return this.bot.sendMessage(
-      this.message.from,
-      url
-    );
-	}
-
-  /**
-   * Respond to '/{start,stop}_watching' command.
-   * Change watching state to stop/start.
-   * @param {string} state - State to which change.
-   * @return {Object} Send message to user.
-   */
-	changeWatchingState(state) {
-		return this.bot.sendMessage(
-      this.message.from,
-      `Ok, since now I will ${state} watching for changes.`,
-    );
-	}
-
-  /**
-   * Respond with passed argument.
-   * @param {string} message - Message to send.
-   * @return {Object} Send message to user.
-   */
-  default(message) {
-    return this.bot.sendMessage(this.message.from, message);
-  }
-
-  /**
-   * Respond to all other messages.
-   * When unknown message is received.
-   * @return {Object} Send message to user.
-   */
-  unknown() {
-    return this.bot.sendMessage(this.message.from, 'Unknown command.');
-  }
-
-  /**
-   * Respond to all other messages.
-   * When unknown message is received.
-   * @return {Object} Send message to user.
-   */
-  watching(id) {
-    return this.bot.sendMessage(id, 'Unknown command.');
   }
 
   build(user, buildStatus, buildNumber, buildID, started, ended) {
@@ -109,10 +114,6 @@ Hi, your build at ${user.url} repository just has ended.
 Your build ${status}.
 Build number was ${buildNumber}.
 Your build started at ${started} and finished at ${ended}. Link to build: ${user.url}/builds/${buildID}`, true);
-  }
-
-  wrongLink(id) {
-    return this.bot.sendMessage(id, 'Please send valid link. Example: https://travis-ci.org/emberjs/ember.js');
   }
 
   /**
@@ -129,10 +130,10 @@ Your build started at ${started} and finished at ${ended}. Link to build: ${user
     if (!intervalId) {
       intervalId = setInterval(() => {
         latestUsers.forEach(user => {
-          this.request
+          helpers
             .getJSON(user.json)
             .then(json => {
-              const time = this.request.time(json);
+              const time = helpers.getTime(json);
               if (json.file) {
                 this.wrongLink(user.id);
                 this.store.then(db => db.delete(user.id));
@@ -144,6 +145,6 @@ Your build started at ${started} and finished at ${ended}. Link to build: ${user
       }, 7000);
     }
 
-    this.bot.sendMessage(this.message.from, 'Ok, since now I will watch for changes.');
+    this.watch(this.message.from);
   }
 }

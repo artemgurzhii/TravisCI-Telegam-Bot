@@ -49,17 +49,13 @@ describe('Respond message is depends on received message', () => {
 	});
 
   describe('TravisCI link', () => {
-		it("'https://travis-ci.org/hello/world' message is received", () => {
+		it('valid link is received', () => {
       const input = new UserInput('https://travis-ci.org/hello/world');
 			expect(input.isValidLink()).to.equal(true);
 		});
-		it("'travis-ci.org/hello/world' message is received", () => {
+		it('link without https is not valid', () => {
       const input = new UserInput('travis-ci.org/hello/world');
 			expect(input.isValidLink()).to.equal(false);
-		});
-    it("'https://travis-ci.org/hello/world' message is received", () => {
-      const input = new UserInput('https://travis-ci.org/hello/world/rand');
-			expect(input.isValidLink()).to.equal(true);
 		});
 	});
 

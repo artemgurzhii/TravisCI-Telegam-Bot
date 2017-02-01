@@ -2,9 +2,8 @@ import TelegramBot from 'node-telegram-bot-api';
 import Message from './message';
 import Input from './input';
 import Output from './output';
-import sliceMsg from '../utils/sliceMessage';
+import helpers from '../utils/helpers';
 import store from '../db';
-import Request from '../utils/httpRequest';
 
 /**
  * Initialize bot.
@@ -103,8 +102,8 @@ export default class Messenger {
      * Select all from db(Array) and pass it as argument, to send request function
 		 */
 		if (input.isValidLink()) {
-			const json = sliceMsg(text);
-      (new Request())
+			const json = helpers.jsonURL(text);
+      helpers
         .getJSON(json)
         .then(data => {
           const fields = [

@@ -18,8 +18,8 @@ class DB {
   /**
    * Update user record(object) in current table. Used if user already exist in db.
    * @param {number} id - User id.
-   * @param {string} url - TravisCI link.
-   * @param {string} json - JSON url for future https requests.
+   * @param {string} url - Received TravisCI link.
+   * @param {string} json - JSON url for https requests.
    * @param {number} prevBuild - Previous build number.
    * @param {number} currBuild - Current build number.
    */
@@ -33,8 +33,8 @@ class DB {
   /**
    * Insert new record(object) into table. Used if user not exist in db.
    * @param {number} id - User id.
-   * @param {string} url - TravisCI link.
-   * @param {string} json - JSON url for future https requests.
+   * @param {string} url - Received TravisCI link.
+   * @param {string} json - JSON url for https requests.
    * @param {number} prevBuild - Previous build number.
    * @param {number} currBuild - Current build number.
    */
