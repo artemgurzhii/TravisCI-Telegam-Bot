@@ -1,14 +1,17 @@
-import request from 'request-promise';
+import request from 'requisition';
+import store from '../db';
+const db = new store();
 
 /**
  * Get JSON data from the requested url.
- * @param {String} url - Url for reqguest.
+ * @param {String} url - Url for request.
  * @return {Object} JSON Object with data from the last build.
  */
 async function getJSON(url) {
-  const body = await request.get(url);
+  const res = await request(url);
+  const body = await res.json();
 
-  return JSON.parse(body);
+  return body;
 }
 
 /**
@@ -35,30 +38,28 @@ function getTime(json) {
   return [started, ended];
 }
 
-function cycle(users) {
+let interval;
 
-  let latestUsers;
-  let intervalId;
-
-  latestUsers = users;
-
-  if (!intervalId) {
-    intervalId = setInterval(() => {
-      latestUsers.forEach(user => {
-        helpers
-          .getJSON(user.json)
-          .then(json => {
-            const time = helpers.getTime(json);
-            if (json.file) {
-              this.wrongLink(user.id);
-              this.store.then(db => db.delete(user.id));
-            } else if (user.watching) {
-              this.build(user, json.buildStatus, json.last_build_number, json.last_build_id, time[0], time[1]);
-            }
-          });
-      });
-    }, 7000);
-  }
+function clear() {
+  clearInterval(interval);
 }
 
-export default { getJSON, jsonURL, getTime, cycle };
+function cycle(users, output) {
+  interval = setInterval(() => {
+    users.forEach(user => {
+      getJSON(user.json).then(json => {
+        db.then(store => store.selectBuild(user.id))
+          .then(buildNumber => {
+          if (user.watching && buildNumber[0].build !== json.last_build_number) {
+            output.build(user, json, getTime(json));
+            db.then(store => {
+              store.updateBuild(user.id, json.last_build_number);
+            });
+          }
+        });
+      });
+    });
+  }, 2000);
+}
+
+export default { getJSON, jsonURL, getTime, cycle, clear };

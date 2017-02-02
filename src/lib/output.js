@@ -1,9 +1,6 @@
 import store from '../db';
 import helpers from '../utils/helpers';
 
-let latestUsers;
-let intervalId;
-
 /**
  * Set received message from user, bot and wathcing state.
  * @class
@@ -107,13 +104,13 @@ Currently i can watch only one repository from each user.`
     );
   }
 
-  build(user, buildStatus, buildNumber, buildID, started, ended) {
-    const status = buildStatus === 0 ? 'completed successfully' : 'failed';
+  build(user, json, time) {
+    const status = json.buildStatus === 0 ? 'completed successfully' : 'failed';
     return this.bot.sendMessage(user.id, `
 Hi, your build at ${user.url} repository just has ended.
 Your build ${status}.
-Build number was ${buildNumber}.
-Your build started at ${started} and finished at ${ended}. Link to build: ${user.url}/builds/${buildID}`, true);
+Build number was ${json.last_build_number}.
+Your build started at ${time[0]} and finished at ${time[1]}. Link to build: ${user.url}/builds/${json.last_build_id}`);
   }
 
   /**
@@ -123,28 +120,13 @@ Your build started at ${started} and finished at ${ended}. Link to build: ${user
    * Argument contains users links to watch, links to json file and chat id.
    * Is user has sent invalid link, delete record.
    * @param {Array} user - received JSON formatted array of data.
+   * @param {Boolean} bool - If 'watching' message should be sended.
    */
-  data(users) {
-    latestUsers = users;
-
-    if (!intervalId) {
-      intervalId = setInterval(() => {
-        latestUsers.forEach(user => {
-          helpers
-            .getJSON(user.json)
-            .then(json => {
-              const time = helpers.getTime(json);
-              if (json.file) {
-                this.wrongLink(user.id);
-                this.store.then(db => db.delete(user.id));
-              } else if (user.watching) {
-                this.build(user, json.buildStatus, json.last_build_number, json.last_build_id, time[0], time[1]);
-              }
-            });
-        });
-      }, 7000);
+  data(users, bool) {
+    helpers.clear();
+    helpers.cycle(users, this);
+    if (bool) {
+      this.watch(this.message.from);
     }
-
-    this.watch(this.message.from);
   }
 }

@@ -1,7 +1,7 @@
 import pg from 'pg';
 
 /**
- * Initialize client for future requests.
+ * Initialize client for database requests.
  * @class
  * @classdesc All methods with database.
  */
@@ -20,13 +20,12 @@ class DB {
    * @param {number} id - User id.
    * @param {string} url - Received TravisCI link.
    * @param {string} json - JSON url for https requests.
-   * @param {number} prevBuild - Previous build number.
-   * @param {number} currBuild - Current build number.
+   * @param {number} build - Current build number.
    */
-  update(id, url, json, prevBuild, currBuild) {
+  update(id, url, json, build) {
     this.client.query(
-      'UPDATE TravisCITelegamBot SET url=($2), json=($3), watching=($4), prevBuild=($5), currBuild=($6) WHERE id=($1)',
-      [id, url, json, true, prevBuild, currBuild]
+      'UPDATE TravisCITelegamBot SET url=($2), json=($3), watching=($4), build=($5) WHERE id=($1)',
+      [id, url, json, true, build]
     );
   }
 
@@ -35,24 +34,24 @@ class DB {
    * @param {number} id - User id.
    * @param {string} url - Received TravisCI link.
    * @param {string} json - JSON url for https requests.
-   * @param {number} prevBuild - Previous build number.
-   * @param {number} currBuild - Current build number.
+   * @param {number} build - Current build number.
    */
-  insert(id, url, json, prevBuild, currBuild) {
+  insert(id, url, json, build) {
     this.client.query(
-      'INSERT INTO TravisCITelegamBot(id, url, json, watching, prevBuild, currBuild) values($1, $2, $3, $4, $5, $6)',
-      [id, url, json, true, prevBuild, currBuild]
+      'INSERT INTO TravisCITelegamBot(id, url, json, watching, build) values($1, $2, $3, $4, $5)',
+      [id, url, json, true, build]
     );
   }
 
   /**
-   * Update previous and last build numbers.
+   * Update previous build number.
    * @param {number} id - User id number.
+   * @param {number} build - Current build number.
    */
-  updateBuild(id) {
+  updateBuild(id, build) {
     this.client.query(
-      'UPDATE TravisCITelegamBot SET prevBuild=($2), currBuild=($3) WHERE id=($1)',
-      [id, prevBuild, currBuild]
+      'UPDATE TravisCITelegamBot SET build=($2) WHERE id=($1)',
+      [id, build]
     );
   }
 
@@ -70,18 +69,19 @@ class DB {
   /**
    * Change user watching state to true/false.
    * @param {number} id - User id number.
-   * @param {boolean} isWatching - User watching state.
+   * @param {boolean} watching - User watching state.
    */
-  watchingState(id, isWatching) {
+  watchingState(id, watching) {
     this.client.query(
       'UPDATE TravisCITelegamBot SET watching=($2) WHERE id=($1)',
-      [id, isWatching]
+      [id, watching]
     );
   }
 
   /**
    * Select url(.json) for https request from user.
    * @param {number} id - User id number.
+   * @return {Array} User url.
    */
   async selectURL(id) {
     let db = [];
@@ -95,13 +95,14 @@ class DB {
   }
 
   /**
-   * Select previous and last build numbers.
+   * Select previous build number.
    * @param {number} id - User id number.
+   * @return {Array} User last build number.
    */
   async selectBuild(id) {
     let db = [];
     await this.client.query(
-      'SELECT prevBuild, currBuild FROM TravisCITelegamBot WHERE id=($1)',
+      'SELECT build FROM TravisCITelegamBot WHERE id=($1)',
       [id]
     ).on('row', row => {
       db.push(row);
@@ -111,6 +112,7 @@ class DB {
 
   /**
    * Select all from database.
+   * @return {Array} All data in the database.
    */
   async selectAll() {
     let db = [];
@@ -128,6 +130,6 @@ class DB {
  */
 export default async function store() {
   const client = await pg.connect(process.env.DATABASE_URL);
-  client.query('CREATE TABLE IF NOT EXISTS TravisCITelegamBot(id SERIAL PRIMARY KEY, url VARCHAR(100), json VARCHAR(120), watching BOOLEAN, prevBuild INTEGER, currBuild INTEGER)');
+  client.query('CREATE TABLE IF NOT EXISTS TravisCITelegamBot(id SERIAL PRIMARY KEY, url VARCHAR(100), json VARCHAR(120), watching BOOLEAN, build VARCHAR(9))');
   return new DB(client);
 }

@@ -13,7 +13,7 @@ import store from '../db';
 export default class Messenger {
 
 	/**
-	 * Set this.bot to new TelegramBot().
+	 * Initialize new Telegram Bot and database.
 	 */
 	constructor() {
 		this.bot = new TelegramBot(process.env.TELEGRAM_TOKEN, {
@@ -23,7 +23,8 @@ export default class Messenger {
 	}
 
 	/**
-	 * Listen for messages and fire response function on new message.
+	 * Listen for messages and fire response function when new mesage is received.
+   * @return {Promise} Resolving promise.
 	 */
 	listen() {
 		this.bot.on('text', this.handleText.bind(this));
@@ -37,9 +38,8 @@ export default class Messenger {
 	 */
 	handleText(msg) {
 		/**
-		 * Format the message.
-		 * Getting message sender and user id stored in message variable.
-		 * Initializing input(received message) and output(message to send, depends on input).
+     * Get message text text and message sender id.
+		 * Initialize input(received message) and output(message to send depends on input).
 		 */
 		const message = new Message(Message.mapMessage(msg));
 		const text = message.text;
@@ -80,7 +80,13 @@ export default class Messenger {
 		 * @return {Promise} Send message to user.
 		 */
 		if (input.isStart()) {
-      this.store.then(db => db.watchingState(message.from, true));
+      this.store
+        .then(db => {
+          db.watchingState(message.from, true);
+          return db;
+        })
+        .then(db => db.selectAll())
+        .then(users => output.data(users, false));
 			return output.changeWatchingState('start');
 		}
 
@@ -90,40 +96,48 @@ export default class Messenger {
 		 * @return {Promise} Send message to user.
 		 */
 		if (input.isStop()) {
-      this.store.then(db => db.watchingState(message.from, false));
+      this.store
+        .then(db => {
+          db.watchingState(message.from, false);
+          return db;
+        })
+        .then(db => db.selectAll())
+        .then(users => output.data(users, false));
 			return output.changeWatchingState('stop');
 		}
 
 		/**
-		 * Checking if user send valid travis-ci link
+		 * Check if user send valid Travis-CI link.
+     * If invalid link was received, returned json is going to have file property.
+     * If valid link was received create new record or update existing.
+     * Select all from db(Array) and pass it as argument, to send request function.
 		 * @return {Promise} Send message to user.
-     * If record already exist in db - update it with new link
-     * Else create new record
-     * Select all from db(Array) and pass it as argument, to send request function
 		 */
 		if (input.isValidLink()) {
 			const json = helpers.jsonURL(text);
+
       helpers
         .getJSON(json)
         .then(data => {
-          const fields = [
-            message.from, text, json,
-            data.last_build_number - 1,
-            data.last_build_number
-          ];
-          this.store
-            .then(db => Promise.all([db, db.selectURL(message.from)]))
-            .then(([db, url]) => {
-              if (url[0]) {
-                db.update(...fields);
-              } else {
-                db.insert(...fields);
-              }
-              return db;
-            })
-            .then(db => db.selectAll())
-            .then(users => output.data(users));
-          });
+          if (data.file) {
+            output.wrongLink(message.from);
+            this.store.then(db => db.delete(message.from));
+          } else {
+            const fields = [message.from, text, json, data.last_build_number - 1];
+            this.store
+              .then(db => Promise.all([db, db.selectURL(message.from)]))
+              .then(([db, url]) => {
+                if (url[0]) {
+                  db.update(...fields);
+                } else {
+                  db.insert(...fields);
+                }
+                return db;
+              })
+              .then(db => db.selectAll())
+              .then(users => output.data(users, true));
+            }
+      });
 		} else {
 			// If unknown message/command was received
 			return output.unknown();
