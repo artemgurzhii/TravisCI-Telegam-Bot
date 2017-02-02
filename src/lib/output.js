@@ -114,11 +114,8 @@ Your build started at ${time[0]} and finished at ${time[1]}. Link to build: ${us
   }
 
   /**
+   * Clear previous interval and start new one.
    * Respond with message that bot is watching for changes.
-   * Make request each 10 seconds to get data.
-   * Send request for each user url.
-   * Argument contains users links to watch, links to json file and chat id.
-   * Is user has sent invalid link, delete record.
    * @param {Array} user - received JSON formatted array of data.
    * @param {Boolean} bool - If 'watching' message should be sended.
    */

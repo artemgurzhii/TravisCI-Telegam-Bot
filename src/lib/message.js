@@ -6,7 +6,7 @@
 export default class Message {
 
   /**
-   * Create a message.
+   * Get sender id message text.
    * @param {Object} message - Get user message object, with text and sender id properties.
    */
 	constructor(message) {
