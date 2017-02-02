@@ -105,7 +105,7 @@ Currently i can watch only one repository from each user.`
   }
 
   build(user, json, time) {
-    const status = json.buildStatus === 0 ? 'completed successfully' : 'failed';
+    const status = json.last_build_status === 0 ? 'completed successfully' : 'failed';
     return this.bot.sendMessage(user.id, `
 Hi, your build at ${user.url} repository just has ended.
 Your build ${status}.
