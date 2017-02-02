@@ -59,7 +59,7 @@ function cycle(users, output) {
         });
       });
     });
-  }, 2000);
+  }, 7000);
 }
 
 export default { getJSON, jsonURL, getTime, cycle, clear };
