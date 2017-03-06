@@ -5,6 +5,8 @@
 
 Telegram bot, which will notify you each time, when your Travis CI build is done.
 
+![travis-ci telegram bot js](http://i.giphy.com/xUPGckHSQNZOfq27WE.gif)
+
 ### Usage
 To start using this bot [send the link](https://telegram.me/TravisCI_Telegam_Bot) to your Travis CI repository like https://travis-ci.org/emberjs/ember.js. After that, a bot will listen for new builds and will notify you each time when your build is done.
 
