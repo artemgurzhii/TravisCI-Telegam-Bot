@@ -104,14 +104,27 @@ Currently i can watch only one repository from each user.`
     );
   }
 
-  build(user, json, time) {
-    const status = json.last_build_status === 0 ? 'completed successfully' : 'failed';
-    return this.bot.sendMessage(user.id, `
-Hi, your build at ${user.url} repository just has ended.
-Your build ${status}.
-Build number was ${json.last_build_number}.
-Your build started at ${time[0]} and finished at ${time[1]}. Link to build: ${user.url}/builds/${json.last_build_id}`);
-  }
+	build(user, json, time) {
+		const buildStatus = json.last_build_status === 0;
+		const status = buildStatus ? 'completed successfully' : 'failed';
+		let statusBuildIcon = '✅';
+		if (!buildStatus) {
+			statusBuildIcon = '❌';
+		}
+		return this.bot.sendMessage(
+			user.id,
+			`${statusBuildIcon} Build #${json.last_build_number} at ${status}
+
+Started : ${time[0]}
+Finished: ${time[1]}
+
+➡️ [Link to build](${user.url}/builds/${json.last_build_id})
+			`,
+			{
+				parse_mode: 'markdown'
+			}
+		);
+	}
 
   /**
    * Clear previous interval and start new one.
