@@ -1,4 +1,3 @@
-import store from '../db';
 import helpers from '../utils/helpers';
 
 /**
@@ -16,7 +15,6 @@ export default class Output {
 	constructor(bot, message) {
     this.bot = bot;
     this.message = message;
-    this.store = store();
   }
 
   /**
@@ -57,11 +55,20 @@ export default class Output {
 
   /**
    * When invalid url was received.
-   * @param {number} id - USer id to whom send message.
+   * @param {number} id - User id to whom send message.
    * @return {Promise} Send message to user.
    */
   wrongLink(id) {
     return this.bot.sendMessage(id, 'Please send valid link. Example: https://travis-ci.org/emberjs/ember.js');
+  }
+
+  /**
+   * About which builds to notify.
+   * @param {builds} string - Builds to watch.
+   * @return {Promise} Send message to user.
+   */
+  watchBuilds(builds = 'all') {
+    return this.bot.sendMessage(this.message.from, `Ok, since now, I will notify you about ${builds} builds.`);
   }
 
   /**

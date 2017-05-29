@@ -24,8 +24,8 @@ class DB {
    */
   update(id, url, json, build) {
     this.client.query(
-      'UPDATE TravisCITelegamBot SET url=($2), json=($3), watching=($4), build=($5) WHERE id=($1)',
-      [id, url, json, true, build]
+      'UPDATE TravisCITelegamBot SET url=($2), json=($3), watching=($4), build=($5), watchonlyfailing=($6) WHERE id=($1)',
+      [id, url, json, true, build, false]
     );
   }
 
@@ -38,8 +38,15 @@ class DB {
    */
   insert(id, url, json, build) {
     this.client.query(
-      'INSERT INTO TravisCITelegamBot(id, url, json, watching, build) values($1, $2, $3, $4, $5)',
-      [id, url, json, true, build]
+      'INSERT INTO TravisCITelegamBot(id, url, json, watching, build, watchonlyfailing) values($1, $2, $3, $4, $5, $6)',
+      [id, url, json, true, build, false]
+    );
+  }
+
+  buildsToNotify(id, watchonlyfailing) {
+    this.client.query(
+      'UPDATE TravisCITelegamBot SET watchonlyfailing=($2) WHERE id=($1)',
+      [id, watchonlyfailing]
     );
   }
 
@@ -130,6 +137,6 @@ class DB {
  */
 export default async function store() {
   const client = await pg.connect(process.env.DATABASE_URL);
-  client.query('CREATE TABLE IF NOT EXISTS TravisCITelegamBot(id SERIAL PRIMARY KEY, url VARCHAR(100), json VARCHAR(120), watching BOOLEAN, build VARCHAR(9))');
+  client.query('CREATE TABLE IF NOT EXISTS TravisCITelegamBot(id SERIAL PRIMARY KEY, url VARCHAR(100), json VARCHAR(120), watching BOOLEAN, build VARCHAR(9), watchonlyfailing BOOLEAN)');
   return new DB(client);
 }

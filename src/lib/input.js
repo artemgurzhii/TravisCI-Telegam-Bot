@@ -21,6 +21,20 @@ export default class Input {
 	}
 
   /**
+   * @return {Boolean} If received message is '/watch_all_builds'.
+   */
+	watchAllBuilds() {
+		return this.message === '/watch_all_builds';
+	}
+
+  /**
+   * @return {Boolean} If received message is '/watch_only_failing_builds'.
+   */
+	watchOnlyFailingBuilds() {
+		return this.message === '/watch_only_failing_builds';
+	}
+
+  /**
    * @return {Boolean} If received message is '/how'.
    */
 	isHelp() {

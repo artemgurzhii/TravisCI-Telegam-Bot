@@ -47,15 +47,34 @@ function clear() {
 function cycle(users, output) {
   interval = setInterval(() => {
     users.forEach(user => {
+      if (user.watchonlyfailing === undefined) {
+        db.then(store => store.buildsToNotify(user.id, false))
+      }
       getJSON(user.json).then(json => {
-        db.then(store => store.selectBuild(user.id))
+        db
+          .then(store => store.selectBuild(user.id))
           .then(buildNumber => {
-          if (user.watching && buildNumber[0].build !== json.last_build_number) {
-            output.build(user, json, getTime(json));
-            db.then(store => {
-              store.updateBuild(user.id, json.last_build_number);
-            });
-          }
+
+          // make sure user is watching
+          // and new build exist
+          if (
+            user.watching &&
+            buildNumber[0].build !== json.last_build_number
+          ) {
+
+            // send all messages if user watching for all builds
+            // or only fail messages
+            if (
+              user.watchonlyfailing === false ||
+              (user.watchonlyfailing === true &&
+              json.last_build_status !== 0)
+            ) {
+              output.build(user, json, getTime(json));
+              db.then(store => {
+                store.updateBuild(user.id, json.last_build_number);
+              });
+            }
+          };
         });
       });
     });

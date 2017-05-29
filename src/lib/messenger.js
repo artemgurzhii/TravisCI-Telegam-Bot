@@ -56,7 +56,31 @@ export default class Messenger {
 			return output.help();
 		}
 
-		/**
+    // '/watch_all_builds' message is received.
+    if (input.watchAllBuilds()) {
+      this.store
+        .then(db => {
+          db.buildsToNotify(message.from, false);
+          return db;
+        })
+        .then(db => db.selectAll())
+        .then(users => output.data(users, false));
+      return output.watchBuilds();
+    }
+
+    // '/watch_only_failing_builds' message is received.
+    if (input.watchOnlyFailingBuilds()) {
+      this.store
+        .then(db => {
+          db.buildsToNotify(message.from, true);
+          return db;
+        })
+        .then(db => db.selectAll())
+        .then(users => output.data(users, false));
+      return output.watchBuilds('only failed');
+    }
+
+    /**
 		 * If '/link' message is received.
 		 * Send link if it exist in db, else send message, that no links are being watched.
 		 * @return {undefined} Send message to user.

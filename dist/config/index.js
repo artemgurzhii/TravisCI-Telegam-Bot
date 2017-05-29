@@ -1,1 +1,0 @@
-"use strict";Object.defineProperty(exports,"__esModule",{value:true});require("dotenv").config();exports.default={telegram:{token:process.env.TELEGRAM_TOKEN||"",port:process.env.PORT,host:process.env.HOST}};
