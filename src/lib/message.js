@@ -20,7 +20,7 @@ export default class Message {
    */
 	static mapMessage(message) {
 		return {
-			from: message.from.id,
+			from: message.chat.id,
 			text: message.text
 		};
 	}
