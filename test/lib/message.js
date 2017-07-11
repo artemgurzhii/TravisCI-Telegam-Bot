@@ -4,7 +4,7 @@ import Message from '../../src/lib/message';
 
 describe('Should get message and user data', () => {
   const data = {
-    from: {
+    chat: {
       id: 123456789
     },
     text: 'Hello World'
