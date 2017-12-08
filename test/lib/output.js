@@ -18,20 +18,20 @@ describe('All commands available to user', () => {
 
   describe('All commands should return/send message', () => {
     it('Message /start was received', () => {
-			expect(output.start()).to.contain('Hi, my nams is @TravisCI_Telegam_Bot');
+			expect(output.start()).to.contain('Hi, my name is @TravisCI_Telegam_Bot');
 		});
     it('Message /help was received', () => {
-			expect(output.help()).to.contain('You send me your Tavis CI repository link.');
+			expect(output.help()).to.contain('You send me your Travis CI repository link.');
 		});
     it('Message /link was received', () => {
       const link = output.link('hello.world');
 			expect(link).to.equal('hello.world');
 		});
     it('Message /start_watching was received', () => {
-			expect(output.changeWatchingState('start')).to.equal('Ok, since now I will start watching for changes.');
+			expect(output.changeWatchingState('start')).to.equal('Ok. Starting now I will start watching for changes.');
 		});
     it('Message /stop_watching was received', () => {
-			expect(output.changeWatchingState('stop')).to.contain('Ok, since now I will stop watching for changes.');
+			expect(output.changeWatchingState('stop')).to.contain('Ok. Starting now I will stop watching for changes.');
 		});
     it('Should return passed argument', () => {
       const def = output.default('hello.world');
