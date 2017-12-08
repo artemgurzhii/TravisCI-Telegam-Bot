@@ -50,7 +50,7 @@ export default class Output {
    * @return {Promise} Send message to user.
    */
   watch(id) {
-    return this.bot.sendMessage(id, 'Ok, since now I will watch for changes.');
+    return this.bot.sendMessage(id, 'Ok. Starting now I will watch for changes.');
   }
 
   /**
@@ -68,7 +68,7 @@ export default class Output {
    * @return {Promise} Send message to user.
    */
   watchBuilds(builds = 'all') {
-    return this.bot.sendMessage(this.message.from, `Ok, since now, I will notify you about ${builds} builds.`);
+    return this.bot.sendMessage(this.message.from, `Ok. Starting now, I will notify you about ${builds} builds.`);
   }
 
   /**
@@ -80,7 +80,7 @@ export default class Output {
 	changeWatchingState(state) {
 		return this.bot.sendMessage(
       this.message.from,
-      `Ok, since now I will ${state} watching for changes.`,
+      `Ok. Starting now I will ${state} watching for changes.`,
     );
 	}
 
@@ -91,7 +91,7 @@ export default class Output {
   start() {
     return this.bot.sendMessage(
       this.message.from,
-      'Hi, my nams is @TravisCI_Telegam_Bot. I will notify you each time when your TravisCI build is done. Type /help to get more info or send TravisCI link to your repository to get started.'
+      'Hi, my name is @TravisCI_Telegam_Bot. I will notify you when your TravisCI build is done. Type /help to get more info or send TravisCI link to your repository to get started.'
     );
   }
 
@@ -102,12 +102,12 @@ export default class Output {
   help() {
     return this.bot.sendMessage(
       this.message.from,
-`You send me your Tavis CI repository link. Example:
+`You send me your Travis CI repository link. Example:
 https://travis-ci.org/emberjs/ember.js
-Then I will watch for changes and will notify you each time when your build is done.
+Then I will watch for changes and will notify you when your build is done.
 
 I will also include some basic information about your build.
-Currently i can watch only one repository from each user.`
+Currently I can watch only one repository from each user.`
     );
   }
 
@@ -120,7 +120,7 @@ Currently i can watch only one repository from each user.`
 		}
 		return this.bot.sendMessage(
 			user.id,
-			`${statusBuildIcon} Build #${json.last_build_number} at ${status}
+			`${statusBuildIcon} Build #${json.last_build_number} ${status}
 
 Started : ${time[0]}
 Finished: ${time[1]}
